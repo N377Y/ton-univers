@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Empreinte du code</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; background: #050817; color: #f6f0e2; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 520px; width: 100%; }
+    input, textarea { width: 100%; box-sizing: border-box; padding: 12px; border-radius: 10px; border: 1px solid #3b4a80; background: #0a1230; color: inherit; font: inherit; }
+    textarea { font-family: ui-monospace, monospace; font-size: 13px; height: 70px; }
+    code { color: #ffd27a; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Empreinte du code final</h1>
+    <p>Tape le code de l’énigme finale. Copie l’empreinte obtenue dans <code>js/config.js</code>, champ <code>codeHash</code>.
+       Majuscules, accents, espaces et ponctuation sont ignorés.</p>
+    <p><input id="c" placeholder="Code final" autocomplete="off"></p>
+    <p>Code normalisé : <code id="n">—</code></p>
+    <p><textarea id="h" readonly></textarea></p>
+  </main>
+  <script src="../js/sha256.js"></script>
+  <script>
+    var c = document.getElementById('c');
+    c.addEventListener('input', function () {
+      document.getElementById('n').textContent = AU.normalizeCode(c.value) || '—';
+      document.getElementById('h').value = c.value ? AU.hashCode(c.value) : '';
+    });
+  </script>
+</body>
+</html>
