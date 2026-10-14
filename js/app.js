@@ -249,6 +249,15 @@
       c.on(el, 'pointercancel', up);
     };
     c.unlocked = function () { if (c.alive) afterUnlock(); };
+    // grand vœu doré sous le texte (lettre par lettre)
+    c.wish = function (t) {
+      if (!c.alive || !t) return;
+      var w = $('#wish');
+      w.innerHTML = '<span class="visually-hidden">' + G.esc(t) + '</span>' + t.split('').map(function (ch, i) {
+        return '<i aria-hidden="true" style="animation-delay:' + (state.reduced ? 0 : i * 60) + 'ms">' + (ch === ' ' ? '&nbsp;' : G.esc(ch)) + '</i>';
+      }).join('');
+      w.hidden = false;
+    };
     c.finale = function () {
       if (!c.alive) return;
       if (mode === 'zone') { c.ready(); return; }
@@ -328,6 +337,7 @@
     hideOverlays();
     nextBtn.classList.remove('pulse');
     hintEl.textContent = '';
+    $('#wish').hidden = true;
     actions.innerHTML = '';
     actions.hidden = true;
     document.body.classList.remove('finale');
@@ -504,6 +514,7 @@
     actions.hidden = true;
     document.body.classList.remove('finale');
     hintEl.textContent = '';
+    $('#wish').hidden = true;
     caption.textContent = '';
     $('#zonecard').hidden = true;
     $('#progress').hidden = true;

@@ -1321,7 +1321,7 @@
       c.dust.set('drift', { alpha: 0.3, fraction: 0.5 });
       var hero = c.$('#hero');
       c.camSet(200, 430, 1.7);
-      c.cam(200, 300, 1, 7000, 'inout');
+      c.cam(200, 365, 1, 7000, 'inout');
       await c.wait(1200);
       hero.classList.add('look-up');
       c.say('Ton univers ne s’arrête pas ici. La suite reste à écrire.');
@@ -1333,7 +1333,27 @@
         await c.wait(4000);
         c.say(c.cfg.finalMessage);
       }
-      await c.wait(2500);
+      await c.wait(3200);
+      if (c.cfg.birthday) {
+        // feux d'artifice d'étoiles, puis le vœu
+        var bursts = [[110, 170, '#ffd27a'], [300, 130, c.cfg.companion.accent], [205, 95, '#7fe9ff'], [200, 200, '#ffd27a']];
+        bursts.forEach(function (b, k) {
+          c.after(k * 650, function () {
+            var ring = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            ring.innerHTML = [0, 1].map(function (j) { return '<circle cx="' + b[0] + '" cy="' + b[1] + '" r="4" fill="none" stroke="' + b[2] + '" stroke-width="' + (2 - j) + '"/>'; }).join('') +
+              Array.apply(null, Array(12)).map(function (_, j) { var a = j / 12 * Math.PI * 2; return '<line x1="' + b[0] + '" y1="' + b[1] + '" x2="' + (b[0] + Math.cos(a) * 46).toFixed(1) + '" y2="' + (b[1] + Math.sin(a) * 46).toFixed(1) + '" stroke="' + b[2] + '" stroke-width="2" stroke-linecap="round"/>'; }).join('');
+            c.camEl.appendChild(ring);
+            ring.style.transformOrigin = b[0] + 'px ' + b[1] + 'px';
+            c.anim(ring, [{ transform: 'scale(.1)', opacity: 1 }, { transform: 'scale(1.3)', opacity: 0.9, offset: 0.4 }, { transform: 'scale(1.9)', opacity: 0 }], { duration: 1600, easing: 'cubic-bezier(.1,.8,.3,1)', fill: 'forwards' });
+            c.dust.burst(b[0], b[1], 5);
+            c.audio.chime([784, 988, 1175, 1568][k]);
+          });
+        });
+        c.after(bursts.length * 650 + 200, function () { c.dust.set('drift', { alpha: 0.5, fraction: 1 }); });
+        await c.wait(900);
+        c.wish(c.cfg.birthday);
+        await c.wait(2600);
+      }
       c.finale();
     },
   });

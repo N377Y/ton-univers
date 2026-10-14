@@ -100,4 +100,7 @@ window.AU.config = {
   // Message personnel discret, affiché seulement dans la carte (« Horizon ouvert »).
   // Laisser vide pour une fin totalement neutre.
   finalMessage: '',
+
+  // Vœu affiché en grand à la toute fin, sous la dernière phrase. Laisser vide pour l'enlever.
+  birthday: 'Joyeux anniversaire',
 };
