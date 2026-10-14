@@ -14,8 +14,15 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-theme="sas">
-  <div id="stage" class="fading"></div>
-  <canvas id="dust" aria-hidden="true"></canvas>
+  <div id="cine">
+    <div id="enter">
+      <div id="stage" class="fading"></div>
+      <canvas id="dust" aria-hidden="true"></canvas>
+    </div>
+  </div>
+  <div id="vignette" aria-hidden="true"></div>
+  <div id="grain" aria-hidden="true"></div>
+  <div id="flash" aria-hidden="true"></div>
   <div id="shade" aria-hidden="true"></div>
 
   <header id="hud">
@@ -31,7 +38,7 @@
     </div>
   </header>
 
-  <div id="actcard" aria-hidden="true"></div>
+  <div id="actintro" hidden role="presentation"></div>
 
   <aside id="zonecard" hidden>
     <button id="zonecard-toggle" type="button" aria-label="Afficher ou masquer les détails"><h2></h2><span class="chev" aria-hidden="true"></span></button>

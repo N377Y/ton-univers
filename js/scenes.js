@@ -25,7 +25,7 @@
 
   /* ============================== SAS ============================== */
   add({
-    id: 'S0.2', act: 0, theme: 'sas', pad: 'sas', lock: true,
+    id: 'S0.2', act: 0, theme: 'sas', pad: 'mystere', lock: true,
     build: async function (c) {
       var marks = [
         // héritage : cercle doré, équilibre : losange/boussole, persévérance : croissant, architecte : pixel
@@ -71,6 +71,7 @@
           }
         });
         c.anim(c.$('#door-core'), [{ opacity: 0.25, r: 6 }, { opacity: 1, r: 14 }], { duration: 600, fill: 'forwards' });
+        c.cam(200, 268, 2.4, 2600, 'in');
         await c.wait(500);
         // la porte s'ouvre en particules
         var pts = c.dust.samplePath('M100,220 A100,100 0 0 1 300,220 L300,450 L100,450 Z', 400);
@@ -92,11 +93,12 @@
 
   /* ============================== ACTE I — L'HÉRITAGE ============================== */
   add({
-    id: 'I.1', act: 1, theme: 'heritage', pad: 'heritage',
+    id: 'I.1', act: 1, theme: 'heritage', pad: 'aventure',
     build: async function (c) {
-      c.html(G.sky('#020308', '#0a0f22') + G.starfield(30, 11, { color: '#ffe9b8' }) +
+      c.html(G.sky('#020308', '#0a0f22', 's11', ['#3a2a6a', '#7a3a12']) + G.starfield(30, 11, { color: '#ffe9b8' }) +
         '<circle id="hit" cx="200" cy="300" r="70" fill="transparent"/>');
       c.dust.color(GOLD);
+      c.camSet(200, 300, 3);
       c.dust.set('single', { x: 200, y: 300 });
       c.say('Avant chaque histoire, il y en a d’autres.');
       c.hint('Touche la lumière');
@@ -108,6 +110,7 @@
         c.audio.wind(5);
         c.audio.low();
         c.dust.set('galaxy', { x: 200, y: 300, r: 175, k: 0.012 });
+        c.cam(200, 300, 1, 7000, 'out');
         c.after(4500, c.ready);
       }
       c.tap(c.$('#hit'), expand, 'La lumière');
@@ -134,9 +137,9 @@
     for (var L = 0; L < layers; L++) {
       var base = y0 + 150 + L * 55, amp = 40 - L * 8;
       if (t.motif === 'plateau' && L === 0) {
-        hills += '<path d="M0,' + (base + 20) + ' L60,' + (base + 20) + ' L85,' + (base - 40) + ' L190,' + (base - 40) + ' L215,' + (base + 20) + ' L260,' + (base + 10) + ' L280,' + (base - 15) + ' L340,' + (base - 15) + ' L360,' + (base + 20) + ' L460,' + (base + 20) + ' L460,600 L0,600 Z" fill="' + pal[1] + '"/>';
+        hills += '<g class="par" data-i="' + i + '" data-k="' + [0.55, 0.3, 0.08][L] + '"><path d="M0,' + (base + 20) + ' L60,' + (base + 20) + ' L85,' + (base - 40) + ' L190,' + (base - 40) + ' L215,' + (base + 20) + ' L260,' + (base + 10) + ' L280,' + (base - 15) + ' L340,' + (base - 15) + ' L360,' + (base + 20) + ' L460,' + (base + 20) + ' L460,600 L0,600 Z" fill="' + pal[1] + '"/></g>';
       } else {
-        hills += '<path d="' + G.hill(base, amp, 100 + i * 7 + L, { x0: 0, x1: 420, step: 60 + L * 15, bottom: 600 }) + '" fill="' + pal[Math.min(L + 1, pal.length - 1)] + '"/>';
+        hills += '<g class="par" data-i="' + i + '" data-k="' + [0.55, 0.3, 0.08][L] + '"><path d="' + G.hill(base, amp, 100 + i * 7 + L, { x0: -80, x1: 500, step: 60 + L * 15, bottom: 600 }) + '" fill="' + pal[Math.min(L + 1, pal.length - 1)] + '"/></g>';
       }
       if (L === 1 && t.motif === 'fleuve') {
         hills += '<path d="M140,600 C170,470 260,440 220,' + (base + 10) + ' S300,' + (base - 10) + ' 340,' + (base - 12) + '" fill="none" stroke="#ffe9b8" stroke-opacity=".7" stroke-width="10" stroke-linecap="round"/>';
@@ -162,7 +165,7 @@
       '<rect x="' + (x0 + 6) + '" y="' + (y0 + 8) + '" width="' + (x1 - x0) + '" height="' + (y1 - y0) + '" rx="8" fill="#000" opacity=".35"/>' +
       '<g clip-path="url(#' + id + ')">' +
       '<rect x="0" y="0" width="460" height="600" fill="' + pal[0] + '"/>' +
-      '<circle cx="' + (130 + R() * 140) + '" cy="' + (y0 + 80) + '" r="34" fill="#fff3d0" opacity=".85"/>' +
+      (function () { var sx = 130 + R() * 140; return '<g class="par" data-i="' + i + '" data-k="0.85"><circle cx="' + sx + '" cy="' + (y0 + 80) + '" r="62" fill="#fff3d0" opacity=".22"/><circle cx="' + sx + '" cy="' + (y0 + 80) + '" r="34" fill="#fff3d0" opacity=".85"/></g>'; })() +
       hills + trees + band +
       '<rect x="' + x0 + '" y="' + (y1 - 46) + '" width="' + (x1 - x0) + '" height="46" fill="#120b08" opacity=".45"/>' +
       '<text x="200" y="' + (y1 - 18) + '" text-anchor="middle" class="svg-label" fill="#fff3d6">' + esc(t.title) + '</text>' +
@@ -172,12 +175,12 @@
   }
 
   add({
-    id: 'I.2', act: 1, theme: 'heritage', pad: 'heritage',
+    id: 'I.2', act: 1, theme: 'heritage', pad: 'aventure',
     build: async function (c) {
       var tabs = c.cfg.origins.tableaux.slice(0, 3);
       var n = tabs.length;
       var mp = c.cfg.origins.mapPoint;
-      c.html(G.sky('#04060f', '#141026') + G.starfield(40, 12, { color: '#ffe9b8' }) +
+      c.html(G.sky('#04060f', '#141026', 's12', ['#7a3a12', '#3a2a6a']) + G.starfield(40, 12, { color: '#ffe9b8' }) +
         '<g id="map" opacity="0"><path d="' + AFRICA.d + '" fill="#ffd27a" fill-opacity=".05" stroke="#ffd27a" stroke-opacity=".55" stroke-width="1.2"/>' +
         '<path d="' + AFRICA.mad + '" fill="none" stroke="#ffd27a" stroke-opacity=".55"/>' +
         (mp ? '<circle cx="' + AFRICA.X(mp.x) + '" cy="' + AFRICA.Y(mp.y) + '" r="5" fill="#fff3d0" class="pulse"/>' : '') + '</g>' +
@@ -192,6 +195,8 @@
       c.dust.color(GOLD);
       var pts = c.dust.samplePath([AFRICA.d, AFRICA.mad], 400);
       c.dust.set('shape', { pts: pts, alpha: 0.85, k: 0.014 });
+      c.camSet(170, 230, 1.6);
+      c.cam(215, 330, 1.15, 6500, 'inout');
       c.say('Des terres, des langues, des savoirs et des histoires se transmettent bien avant nous.');
       await c.wait(c.zone ? 1200 : 3200);
       c.anim(c.$('#map'), [{ opacity: 0 }, { opacity: 1 }], { duration: 1500, fill: 'forwards' });
@@ -199,6 +204,7 @@
       c.dust.set('drift', { alpha: 0.3, fraction: 0.5 });
       c.anim(c.$('#map'), [{ opacity: 1 }, { opacity: 0 }], { duration: 1200, fill: 'forwards' });
       c.anim(c.$('#strip'), [{ opacity: 0 }, { opacity: 1 }], { duration: 1400, fill: 'forwards' });
+      c.camReset(1800);
       if (n > 1) c.anim(c.$('#nav'), [{ opacity: 0 }, { opacity: 1 }], { duration: 1400, fill: 'forwards' });
       else c.ready();
       if (n > 1) c.hint('Fais glisser pour découvrir la suite');
@@ -214,6 +220,7 @@
         c.tween(800, function (t) {
           cur = from + (idx - from) * t;
           strip.setAttribute('transform', 'translate(' + (-cur * 400) + ',0)');
+          c.$$('.par').forEach(function (el) { el.setAttribute('transform', 'translate(' + ((cur - el.dataset.i) * el.dataset.k * 90).toFixed(1) + ',0)'); });
         });
         c.$$('#dots circle').forEach(function (d, i) { d.setAttribute('opacity', i === idx ? 1 : 0.3); });
         seen = Math.max(seen, idx + 1);
@@ -236,7 +243,7 @@
   }
 
   add({
-    id: 'I.3', act: 1, theme: 'heritage', pad: 'heritage',
+    id: 'I.3', act: 1, theme: 'heritage', pad: 'aventure',
     build: async function (c) {
       var sy = c.cfg.origins.symbols.slice(0, 5);
       var n = sy.length;
@@ -244,7 +251,7 @@
         var a = Math.PI * (0.85 - 0.7 * (n === 1 ? 0.5 : i / (n - 1)));
         return [200 + Math.cos(a) * 140, 330 - Math.sin(a) * 120];
       });
-      c.html(G.sky('#03040c', '#120d24') + G.starfield(90, 13, { color: '#ffe9b8' }) +
+      c.html(G.sky('#03040c', '#120d24', 's13', ['#6a3a12', '#2a2a6a']) + G.starfield(90, 13, { color: '#ffe9b8' }) +
         '<path id="link" d="M' + P.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' L') + '" fill="none" stroke="#ffd27a" stroke-opacity=".35" stroke-dasharray="2 6"/>' +
         sy.map(function (s, i) {
           return '<g class="sym" id="sym' + i + '" transform="translate(' + P[i][0].toFixed(1) + ',' + P[i][1].toFixed(1) + ')" opacity="0">' +
@@ -274,12 +281,14 @@
       orb.setAttribute('opacity', 1);
       for (var k = 0; k < n; k++) {
         var a = k ? P[k - 1] : [P[0][0] - 60, P[0][1] + 30], b = P[k];
+        c.cam(b[0] * 0.6 + 80, b[1] + 30, 1.3, 1100);
         await c.tween(1100, function (t) {
           orb.setAttribute('transform', 'translate(' + (a[0] + (b[0] - a[0]) * t) + ',' + (a[1] + (b[1] - a[1]) * t - Math.sin(t * Math.PI) * 25) + ')');
         });
         c.$('#sym' + k).classList.add('lit');
         c.audio.blip(330 * Math.pow(1.122, k * 2));
       }
+      c.camReset(2200);
       await c.wait(2000);
       c.ready();
       await c.wait(3500);
@@ -292,14 +301,16 @@
   });
 
   add({
-    id: 'I.4', act: 1, theme: 'heritage', pad: 'heritage',
+    id: 'I.4', act: 1, theme: 'heritage', pad: 'aventure',
     build: async function (c) {
       c.html(G.sky('#0b0a12', '#2a1e1a') +
         '<path d="' + G.hill(520, 18, 5, { step: 120 }) + '" fill="#3a2a20" opacity=".6"/>' +
         '<path d="' + G.hill(560, 10, 6, { step: 160 }) + '" fill="#241a16"/>' +
+        G.rays(200, 320, '#ffd27a', 11, 560, 0.35) +
         '<circle id="heart" cx="200" cy="320" r="60" fill="url(#halo)" opacity="0" class="beat"/>');
+      c.cam(200, 320, 1.6, 7000, 'inout');
       c.dust.set('gather', { x: 200, y: 320, r: 46, k: 0.016 });
-      c.audio.pad([110, 164.8]);
+      c.audio.duck(0.35, 3);
       c.say('Et puis, un jour, une histoire nouvelle commence.');
       await c.wait(1500);
       c.anim(c.$('#heart'), [{ opacity: 0 }, { opacity: 0.9 }], { duration: 2500, fill: 'forwards' });
@@ -310,21 +321,23 @@
 
   /* ============================== ACTE II — L'ÉQUILIBRE ============================== */
   function indigoSky(c) {
-    return G.sky('#0d0b2a', '#2a2266') + G.starfield(60, 21, { y1: 380 });
+    return G.sky('#0d0b2a', '#2a2266', 'indigo', ['#7a5aff', '#3a1a8a']) + G.starfield(60, 21, { y1: 380 });
   }
 
   add({
-    id: 'II.1', act: 2, theme: 'balance', pad: 'balance',
+    id: 'II.1', act: 2, theme: 'balance', pad: 'reflexion',
     build: async function (c) {
       var X = 200, Y = 470, Hh = 120;
       c.html(indigoSky(c) +
         '<ellipse cx="200" cy="480" rx="260" ry="34" fill="#1a1550" opacity=".9"/>' +
         '<ellipse cx="200" cy="474" rx="70" ry="9" fill="#000" opacity=".35"/>' +
-        fig({ id: 'hero', x: X, y: Y, h: Hh, accent: c.cfg.hero.accent, opacity: 0 }) +
+        fig({ id: 'hero', x: X, y: Y, h: Hh, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair, opacity: 0 }) +
         '<circle id="hit" cx="200" cy="400" r="90" fill="transparent"/>');
       c.dust.color(GOLD);
       var pts = c.dust.samplePath(G.figPath(X, Y, Hh), 300, { sortY: true });
       c.dust.set('shape', { pts: pts, prog: 0, restX: X, restY: Y + 6, restR: 40, alpha: 0.95, k: 0.03, jitter: 0.6 });
+      c.camSet(200, 445, 2.1);
+      c.cam(200, 420, 1.6, 5000, 'inout');
       c.say('Il y a mille façons de commencer à devenir soi.');
       c.audio.chime(523);
       await c.tween(4200, function (t) { c.dust.update({ prog: t * 0.82 }); }, 'linear');
@@ -337,6 +350,7 @@
         c.audio.chime(784);
         await c.tween(900, function (t) { c.dust.update({ prog: 0.82 + t * 0.18 }); });
         var hero = c.$('#hero');
+        c.cam(200, 400, 1.2, 4000);
         await c.anim(hero, [{ opacity: 0 }, { opacity: 1 }], { duration: 1400, fill: 'forwards' });
         c.dust.set('drift', { alpha: 0.25, fraction: 0.35 });
         hero.classList.add('wobble');
@@ -357,11 +371,12 @@
   });
 
   add({
-    id: 'II.2', act: 2, theme: 'balance', pad: 'balance',
+    id: 'II.2', act: 2, theme: 'balance', pad: 'reflexion',
     build: async function (c) {
       var L = 'M200,520 C120,500 70,420 120,360 S200,300 200,265';
       var R = 'M200,520 C290,505 340,440 300,380 S210,320 200,265';
       c.html(indigoSky(c) +
+        G.rays(200, 215, '#cdbfff', 9, 420, 0.3) +
         '<g id="tree" transform="translate(200,265)" opacity=".55">' +
         '<circle cy="-50" r="70" fill="url(#halo)" opacity=".5"/>' +
         '<path d="M-3,0 L-2,-40 L-16,-58 M-2,-40 L0,-70 M0,-46 L15,-60" stroke="#e8dcff" stroke-width="3" fill="none" stroke-linecap="round"/>' +
@@ -375,8 +390,10 @@
         '<path id="hitL" d="' + L + '" stroke="transparent" stroke-width="50"/>' +
         '<path id="hitR" d="' + R + '" stroke="transparent" stroke-width="50"/>' +
         '</g>' +
-        fig({ id: 'hero', x: 200, y: 522, h: 70, accent: c.cfg.hero.accent }));
+        fig({ id: 'hero', x: 200, y: 522, h: 70, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }));
       c.dust.set('drift', { alpha: 0.2, fraction: 0.3 });
+      c.camSet(200, 300, 1);
+      c.cam(200, 460, 1.55, 3000);
       c.say('On ne choisit pas toujours ce qui arrive. On peut apprendre à choisir comment avancer.');
       var hero = c.$('#hero');
       await c.wait(1000);
@@ -396,8 +413,11 @@
         c.anim(path, [{ opacity: 0.55 }, { opacity: 0.95 }], { duration: 600, fill: 'forwards' });
         c.audio.chime(side === 'L' ? 587 : 659);
         hero.classList.add('walking');
-        await c.walk(hero, path, 5200, { s0: 0.7, s1: 0.42 });
+        c.follow(hero, { dy: -30, z: 1.6, k: 0.04 });
+        await c.walk(hero, path, 5600, { s0: 0.7, s1: 0.42 });
         hero.classList.remove('walking');
+        c.follow(null);
+        c.cam(200, 290, 1.05, 2600);
         c.audio.chime(880);
         c.anim(c.$('#tree'), [{ opacity: 0.55 }, { opacity: 1 }], { duration: 1500, fill: 'forwards' });
         c.ready();
@@ -409,7 +429,7 @@
   });
 
   add({
-    id: 'II.3', act: 2, theme: 'balance', pad: 'balance',
+    id: 'II.3', act: 2, theme: 'balance', pad: 'reflexion',
     build: async function (c) {
       c.html(indigoSky(c) +
         '<rect x="-700" y="470" width="1800" height="700" fill="#16123f"/>' +
@@ -420,12 +440,15 @@
         '<path id="trail" d="M290,470 L1100,470" stroke="#ffd27a" stroke-width="3" opacity="0"/>' +
         '<circle id="glow" cx="0" cy="0" r="50" fill="url(#halo)" opacity="0"/>' +
         '<rect id="ground" x="-700" y="440" width="1800" height="200" fill="transparent"/>' +
-        fig({ id: 'hero', x: 40, y: 470, h: 85, accent: c.cfg.hero.accent }));
+        fig({ id: 'hero', x: 40, y: 470, h: 85, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }));
       c.say('Avancer n’a jamais voulu dire ne jamais tomber.');
       var hero = c.$('#hero');
+      c.camSet(60, 420, 1.4);
+      c.follow(hero, { dy: -40, z: 1.4, k: 0.05 });
       hero.classList.add('walking');
-      await c.walk(hero, [[40, 470], [222, 470]], 3000);
+      await c.walk(hero, [[40, 470], [222, 470]], 3400);
       hero.classList.remove('walking');
+      c.follow(hero, { dx: 30, dy: -10, z: 2, k: 0.03 });
       hero.classList.add('stumble');
       c.audio.low();
       await c.wait(1800);
@@ -449,10 +472,13 @@
       c.anim(gl, [{ opacity: 0 }, { opacity: 0.8 }, { opacity: 0.25 }], { duration: 2000, fill: 'forwards' });
       c.audio.chime(880);
       await c.wait(900);
+      c.follow(hero, { dy: -45, z: 1.3, k: 0.04 });
       hero.classList.add('walking');
       var lift = stepped ? 18 : 0;
       await c.walk(hero, [[222, 470], [262, 470 - lift], [300, 470 - lift], [340, 470]], 2600);
       hero.classList.remove('walking');
+      c.follow(null);
+      c.cam(260, 380, 1, 2500);
       c.draw(c.$('#trail'), 2000);
       c.$('#trail').setAttribute('opacity', 0.7);
       c.ready();
@@ -460,7 +486,7 @@
   });
 
   add({
-    id: 'II.4', act: 2, theme: 'balance', pad: 'balance',
+    id: 'II.4', act: 2, theme: 'balance', pad: 'reflexion',
     build: async function (c) {
       var cx = 200, cy = 270, r = 100, words = ['Réfléchir', 'Choisir', 'Apprendre', 'Recommencer'];
       var ring = '';
@@ -478,8 +504,9 @@
         '<circle r="22" fill="transparent" class="hitc"/><circle r="7" fill="#fff" id="hub" opacity=".5"/></g>' +
         '<path id="ink" d="M200,192 L200,70 L1100,70" fill="none" stroke="#ff9a3c" stroke-width="3" opacity="0"/>' +
         '<rect x="-700" y="500" width="1800" height="600" fill="#16123f"/>' +
-        fig({ id: 'hero', x: 70, y: 500, h: 60, accent: c.cfg.hero.accent }));
+        fig({ id: 'hero', x: 70, y: 500, h: 60, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }));
       var tw = c.$$('.word');
+      c.camSet(200, 270, 1.45);
       c.say('Réfléchir. Choisir. Apprendre. Recommencer.');
       c.hint('Touche le centre de la boussole');
       var on = false;
@@ -489,6 +516,7 @@
         c.hint('');
         c.$('#hub').setAttribute('opacity', 1);
         c.audio.chime(523);
+        c.cam(200, 300, 1, 3500);
         var rot = c.$('.needle-rot');
         c.anim(rot, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(760deg)' }], { duration: 3200, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
         c.$$('.ring-star').forEach(function (s, i) { c.after(i * 180, function () { s.classList.remove('dim'); }); });
@@ -504,6 +532,8 @@
         c.$('#ink').setAttribute('opacity', 1);
         c.draw(c.$('#ink'), 1800);
         c.ready();
+        await c.wait(1400);
+        c.cam(330, 70, 1.8, 2200, 'in');
       }
       c.tap(c.$('#needle'), light, 'Le centre de la boussole');
       c.after(9000, light);
@@ -529,54 +559,143 @@
   }
 
   add({
-    id: 'III.1', act: 3, theme: 'ink', pad: 'ink',
+    id: 'III.1', act: 3, theme: 'ink', pad: 'opening',
     build: async function (c) {
       var pages = [[70, 170, -8], [230, 140, 6], [150, 300, -3]];
+      var fr = c.cfg.friends.slice(0, 3);
+      var hero = c.cfg.hero;
+      function zoomLines(cx, cy, col, op) {
+        var s = '<g class="zoomlines" stroke="' + col + '" stroke-opacity="' + op + '" stroke-width="3" stroke-dasharray="60 420">';
+        for (var i = 0; i < 44; i++) {
+          var a = i / 44 * Math.PI * 2 + (i % 3) * 0.02;
+          s += '<line x1="' + (cx + Math.cos(a) * 40).toFixed(0) + '" y1="' + (cy + Math.sin(a) * 40).toFixed(0) + '" x2="' + (cx + Math.cos(a) * 760).toFixed(0) + '" y2="' + (cy + Math.sin(a) * 760).toFixed(0) + '" style="animation-delay:-' + ((i * 37) % 40) / 100 + 's"/>';
+        }
+        return s + '</g>';
+      }
+      // plan A : la course
+      var shotA = '<g class="shot" id="shotA" display="none">' +
+        '<rect x="-900" y="-700" width="2200" height="2040" fill="#ff6a24"/>' +
+        '<circle cx="200" cy="330" r="420" fill="url(#halo)" opacity=".9"/>' +
+        zoomLines(200, 330, '#3a1004', 0.35) +
+        '<g class="streaks" fill="#fff6e8" opacity=".75">' + [0, 1, 2, 3, 4, 5, 6, 7].map(function (k) { return '<rect x="' + (-200 + k * 90) + '" y="' + (380 + (k % 4) * 45) + '" width="' + (120 + (k % 3) * 60) + '" height="3" rx="1.5"/>'; }).join('') + '</g>' +
+        '<rect x="-900" y="560" width="2200" height="900" fill="#2a0c04"/>' +
+        fig({ id: 'runA', x: 190, y: 562, h: 290, accent: '#fff3e0', hair: hero.hair, cls: 'walking run' }) +
+        '</g>';
+      // plan B : les compagnons, en cases de manga
+      var polys = [[[-80, -200], [125, -200], [85, 900], [-120, 900]], [[135, -200], [285, -200], [245, 900], [95, 900]], [[295, -200], [500, -200], [460, 900], [255, 900]]];
+      var shotB = '<g class="shot" id="shotB" display="none"><rect x="-900" y="-700" width="2200" height="2040" fill="#1a0a04"/>' +
+        polys.slice(0, Math.max(1, fr.length)).map(function (p, i) {
+          var f = fr[i] || { accent: '#ffd27a' };
+          var d = 'M' + p.map(function (q) { return q.join(','); }).join(' L') + ' Z';
+          var cx = (p[0][0] + p[1][0] + p[2][0] + p[3][0]) / 4;
+          return '<g class="panel" id="pan' + i + '"><clipPath id="clipP' + i + '"><path d="' + d + '"/></clipPath>' +
+            '<g clip-path="url(#clipP' + i + ')"><rect x="-900" y="-700" width="2200" height="2040" fill="' + f.accent + '"/>' +
+            zoomLines(cx, 260, '#1a0a04', 0.18) +
+            fig({ x: cx, y: 600, h: 250, accent: '#fff8ea', acc: f.accessoire, hair: f.hair, f: i % 2 ? -1 : 1, cls: i === 1 ? 'wave' : '' }) + '</g>' +
+            '<path d="' + d + '" fill="none" stroke="#1a0a04" stroke-width="7"/></g>';
+        }).join('') + '</g>';
+      // plan C : sous la lune
+      var shotC = '<g class="shot" id="shotC" display="none">' + G.sky('#120a33', '#4a2266', 'shotCsky', ['#ff8ac0', '#7a5aff']) + G.starfield(60, 77, { y1: 520 }) +
+        '<circle cx="235" cy="250" r="230" fill="url(#moonGlow)"/><circle cx="235" cy="250" r="150" fill="url(#moonGrad)"/>' +
+        '<path d="M-900,1400 L-900,560 L60,560 L80,548 L230,548 L250,560 L1300,560 L1300,1400 Z" fill="#0b0820"/>' +
+        '<g stroke="#fff" stroke-opacity=".5" stroke-width="1.5" class="streaks">' + [0, 1, 2, 3, 4].map(function (k) { return '<line x1="' + (-100 + k * 110) + '" y1="' + (300 + k * 40) + '" x2="' + (-20 + k * 110) + '" y2="' + (296 + k * 40) + '"/>'; }).join('') + '</g>' +
+        fig({ x: 135, y: 549, h: 200, accent: hero.accent, hair: hero.hair, cls: 'look-up' }) +
+        fig({ x: 300, y: 561, h: 160, accent: c.cfg.companion.accent, hair: c.cfg.companion.hair || 'chignon', f: -1 }) +
+        '</g>';
+      // plan D : le titre
+      var splash = '', R = G.rng(404);
+      for (var k = 0; k < 16; k++) splash += '<circle cx="' + (R() * 420 - 10).toFixed(0) + '" cy="' + (140 + R() * 380).toFixed(0) + '" r="' + (2 + R() * 9).toFixed(1) + '"/>';
+      var shotD = '<g class="shot" id="shotD" display="none"><rect x="-900" y="-700" width="2200" height="2040" fill="#fff6e8"/>' +
+        zoomLines(200, 320, '#1a0a04', 0.22) +
+        '<g fill="#1a0a04" opacity=".85">' + splash + '</g>' +
+        '<g id="title" style="transform-origin:200px 320px">' +
+        '<path d="M-40,350 C80,300 230,330 450,270 L460,330 C250,380 90,360 -30,410 Z" fill="#ff6a24"/>' +
+        '<text x="200" y="262" text-anchor="middle" class="manga-kicker" fill="#1a0a04">ACTE III</text>' +
+        '<text x="200" y="345" text-anchor="middle" class="manga-title" fill="#1a0a04" textLength="372" lengthAdjust="spacingAndGlyphs" transform="rotate(-6 200 330)">PERSÉVÉRANCE</text>' +
+        '<text x="200" y="420" text-anchor="middle" class="manga-sub" fill="#1a0a04" transform="rotate(-6 200 410)">passions · amitiés · rencontres</text>' +
+        '</g></g>';
+
       c.html(inkSky() +
         '<path d="' + G.hill(470, 30, 41, { step: 90 }) + '" fill="#9a3b16"/>' +
         '<path d="' + G.hill(510, 18, 42, { step: 120 }) + '" fill="#3a1608"/>' +
+        '<path id="road" d="M-700,560 C-200,548 100,572 400,556 S900,560 1100,556" fill="none" stroke="#fff3e0" stroke-opacity=".9" stroke-width="9" stroke-linecap="round" opacity="0"/>' +
+        fig({ id: 'runner', x: -60, y: 557, h: 95, accent: '#fff4e0', hair: hero.hair, opacity: 0 }) +
         pages.map(function (p, i) {
           return '<g class="page" id="page' + i + '" transform="translate(' + p[0] + ',' + p[1] + ') rotate(' + p[2] + ')"><g class="float" style="animation-delay:-' + i * 1.3 + 's">' + inkPanel(i, i) + '</g></g>';
         }).join('') +
-        '<g id="big" opacity="0" pointer-events="none">' +
-        '<rect x="20" y="90" width="360" height="400" fill="#fff6e8" stroke="#2a1206" stroke-width="5"/>' +
-        '<clipPath id="bigClip"><rect x="23" y="93" width="354" height="394"/></clipPath>' +
-        '<g clip-path="url(#bigClip)">' +
-        '<rect x="0" y="0" width="400" height="600" fill="#ffcf8f"/>' +
-        '<g stroke="#2a1206" stroke-opacity=".5" stroke-width="1.5">' + (function () { var s = ''; for (var k = 0; k < 18; k++) { var y = 110 + k * 20; s += '<line x1="' + (20 + (k * 37) % 120) + '" y1="' + y + '" x2="' + (380 - (k * 53) % 100) + '" y2="' + y + '"/>'; } return s; })() + '</g>' +
-        '<path d="M0,420 L80,330 L130,380 L200,290 L270,370 L330,320 L400,400 L400,600 L0,600 Z" fill="#2a1206"/>' +
-        '<rect x="0" y="440" width="400" height="160" fill="#7a2a0e"/>' +
-        fig({ id: 'teen', x: -40, y: 440, h: 110, accent: '#fff4e0' }) +
-        '</g></g>' +
-        '<path id="road" d="M-700,560 L1100,560" stroke="#2a1206" stroke-width="10" opacity="0"/>');
+        '<g pointer-events="none">' + shotA + shotB + shotC + shotD + '</g>');
       c.dust.set('off');
+      c.camSet(200, 260, 1.2);
       c.say('Certains mondes imaginaires nous accompagnent bien après la dernière page.');
       c.hint('Touche une page');
       var opened = false;
+      function show(id) {
+        c.$$('.shot').forEach(function (s) { s.setAttribute('display', s.id === id ? 'inline' : 'none'); });
+      }
       async function open(i) {
         if (opened) return;
         opened = true;
         c.hint('');
-        c.audio.chime(740);
-        c.$$('.page').forEach(function (p, k) { if (k !== i) c.anim(p, [{ opacity: 1 }, { opacity: 0 }], { duration: 500, fill: 'forwards' }); });
-        c.anim(c.$('#page' + i), [{ opacity: 1 }, { opacity: 0 }], { duration: 700, fill: 'forwards' });
-        await c.anim(c.$('#big'), [{ opacity: 0, transform: 'scale(.3)', transformOrigin: '200px 290px' }, { opacity: 1, transform: 'scale(1)', transformOrigin: '200px 290px' }], { duration: 900, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
-        var teen = c.$('#teen');
-        teen.classList.add('walking', 'run');
-        c.audio.blip(523); c.after(300, function () { c.audio.blip(659); });
-        await c.walk(teen, [[-40, 440], [440, 440]], 3200);
+        var p = pages[i];
+        c.say('');
+        c.audio.whoosh(0.9);
+        await c.cam(p[0] + 50, p[1] + 40, 4.2, 900, 'in');
+        c.flash('#fff', 380);
+        c.audio.hit();
+        c.$$('.page').forEach(function (pg) { pg.setAttribute('display', 'none'); });
+        // générique d'ouverture : plans rapides, calés sur le tempo
+        var beat = 60 / 168 * 1000;
+        show('shotA');
+        c.camSet(200, 330, 1);
+        c.cam(200, 380, 1.18, beat * 4, 'linear');
+        await c.wait(beat * 4);
+        c.flash('#fff', 260);
+        show('shotB');
+        c.camSet(200, 330, 1.08);
+        c.$$('.panel').forEach(function (pn, k) {
+          c.anim(pn, [{ transform: 'translateY(' + (k % 2 ? -720 : 720) + 'px)' }, { transform: 'translateY(0)' }], { duration: 380, delay: k * 110, easing: 'cubic-bezier(.2,.9,.2,1)', fill: 'backwards' });
+        });
+        c.cam(200, 330, 1, beat * 4, 'linear');
+        await c.wait(beat * 4);
+        c.flash('#fff', 260);
+        show('shotC');
+        c.camSet(220, 330, 1);
+        c.cam(200, 400, 1.2, beat * 4, 'linear');
+        await c.wait(beat * 4);
+        c.flash('#fff', 300);
+        show('shotD');
+        c.camSet(200, 330, 1);
+        c.audio.hit();
+        c.anim(c.$('#title'), [{ transform: 'scale(2.6)', opacity: 0 }, { transform: 'scale(.94)', opacity: 1, offset: 0.7 }, { transform: 'scale(1)', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+        c.anim(c.$('#shotD'), [{ transform: 'translate(0,0)' }, { transform: 'translate(-7px,5px)' }, { transform: 'translate(6px,-4px)' }, { transform: 'translate(-3px,2px)' }, { transform: 'translate(0,0)' }], { duration: 360, delay: 300 });
+        c.cam(200, 330, 1.1, beat * 7, 'linear');
+        await c.wait(beat * 7);
+        c.flash('#fff', 500);
+        show('');
         // la page devient un chemin
-        await c.anim(c.$('#big'), [{ opacity: 1, transform: 'scale(1,1)', transformOrigin: '200px 560px' }, { opacity: 0, transform: 'scale(3,0.02)', transformOrigin: '200px 560px' }], { duration: 1000, fill: 'forwards' });
-        c.$('#road').setAttribute('opacity', 1);
-        c.ready();
+        c.camSet(120, 470, 1.5);
+        c.say('Une page devient un chemin.');
+        var road = c.$('#road');
+        road.setAttribute('opacity', 1);
+        c.draw(road, 1600);
+        var runner = c.$('#runner');
+        runner.setAttribute('opacity', 1);
+        runner.classList.add('walking', 'run');
+        c.follow(runner, { dy: -60, z: 1.5, k: 0.05 });
+        c.walk(runner, [[-60, 557], [180, 556], [330, 558]], 3200).then(function () {
+          runner.classList.remove('walking', 'run');
+          c.follow(null);
+          c.cam(240, 380, 1.05, 2200);
+          c.ready();
+        });
       }
       for (var i = 0; i < 3; i++) (function (i) { c.tap(c.$('#page' + i), function () { open(i); }, 'Une page flottante'); })(i);
-      c.after(9000, function () { open(2); });
+      c.after(8000, function () { open(2); });
     },
   });
 
   add({
-    id: 'III.2', act: 3, theme: 'ink', pad: 'ink',
+    id: 'III.2', act: 3, theme: 'ink', pad: 'opening',
     build: async function (c) {
       c.html(G.sky('#1a0b12', '#4a1c1a', 'duskSky') + G.starfield(30, 51, { y1: 300 }) +
         '<circle cx="360" cy="240" r="90" fill="url(#halo)" opacity=".7"/>' +
@@ -585,7 +704,7 @@
         '<rect x="180" y="470" width="70" height="300" fill="#0b0406"/>' +
         '<g id="edges" opacity="0"><line x1="-700" y1="470" x2="180" y2="470" stroke="#ffd27a" stroke-width="3"/><line x1="250" y1="470" x2="1100" y2="470" stroke="#ffd27a" stroke-width="3"/><circle cx="215" cy="470" r="60" fill="url(#halo)"/></g>' +
         star({ id: 'edgeStar', x: 165, y: 395, r: 5 }) +
-        fig({ id: 'hero', x: 30, y: 470, h: 95, accent: c.cfg.hero.accent }));
+        fig({ id: 'hero', x: 30, y: 470, h: 95, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }));
       c.say('La persévérance, ce n’est pas ne jamais douter. C’est trouver une raison de continuer.');
       c.hint('Touche l’étoile, si tu veux éclairer le passage');
       c.tap(c.$('#edgeStar'), function () {
@@ -597,6 +716,8 @@
       function jump(x0, x1, hgt, dur) {
         return c.tween(dur, function (t) { c.pos(hero, x0 + (x1 - x0) * t, 470 - Math.sin(t * Math.PI) * hgt); }, 'linear');
       }
+      c.camSet(60, 420, 1.35);
+      c.follow(hero, { dy: -45, z: 1.35, k: 0.06 });
       hero.classList.add('walking', 'run');
       await c.walk(hero, [[30, 470], [168, 470]], 1800);
       hero.classList.remove('walking');
@@ -604,8 +725,10 @@
       await c.wait(300);
       hero.classList.remove('crouch');
       // essai raté : trop court, il revient sur le bord
+      hero.classList.add('air');
       await jump(168, 196, 26, 420);
       await jump(196, 160, 14, 380);
+      hero.classList.remove('air');
       hero.classList.add('crouch');
       c.audio.low();
       await c.wait(300);
@@ -623,12 +746,22 @@
       hero.classList.add('run');
       await c.walk(hero, [[100, 470], [170, 470]], 600);
       hero.classList.remove('walking');
-      await jump(170, 280, 55, 700);
+      // le saut réussi, au ralenti
+      hero.classList.remove('walking');
+      hero.classList.add('air');
+      c.follow(hero, { dx: 10, dy: -50, z: 1.9, k: 0.05 });
+      c.audio.whoosh(1.4);
+      await jump(170, 280, 60, 1500);
+      hero.classList.remove('air');
+      c.follow(hero, { dy: -45, z: 1.2, k: 0.04 });
+      c.audio.hit();
       c.audio.chime(988);
       c.anim(c.$('#edges'), [{ opacity: 0 }, { opacity: 1 }], { duration: 900, fill: 'forwards' });
       hero.classList.add('walking');
       await c.walk(hero, [[280, 470], [330, 470]], 900);
       hero.classList.remove('walking', 'run');
+      c.follow(null);
+      c.cam(280, 360, 1, 2000);
       c.hint('');
       c.ready();
     },
@@ -642,7 +775,7 @@
   }
 
   add({
-    id: 'III.3', act: 3, theme: 'night', pad: 'ink',
+    id: 'III.3', act: 3, theme: 'night', pad: 'opening',
     build: async function (c) {
       var L = friendsLayout(c);
       c.html(G.sky('#0b0a26', '#2b1840') + G.starfield(70, 61, { y1: 400 }) +
@@ -650,11 +783,12 @@
         '<rect x="-700" y="470" width="1800" height="600" fill="#120b24"/>' +
         '<path id="route" d="M' + L.map(function (l) { return l.sx + ',' + l.sy; }).join(' L') + ' L420,90" fill="none" stroke="#ffd27a" stroke-opacity=".5" stroke-dasharray="2 6" opacity="0"/>' +
         L.map(function (l, i) { return star({ id: 'fs' + i, x: l.sx, y: l.sy, r: 4.5, opacity: 0, color: l.f.accent }); }).join('') +
-        L.map(function (l, i) { return fig({ id: 'friend' + i, x: 460 + i * 40, y: 470, h: 80 + (i % 2) * 8, accent: l.f.accent, acc: l.f.accessoire, f: -1 }); }).join('') +
-        fig({ id: 'hero', x: 120, y: 470, h: 95, accent: c.cfg.hero.accent }) +
+        L.map(function (l, i) { return fig({ id: 'friend' + i, x: 460 + i * 40, y: 470, h: 80 + (i % 2) * 8, accent: l.f.accent, acc: l.f.accessoire, hair: l.f.hair, f: -1 }); }).join('') +
+        fig({ id: 'hero', x: 120, y: 470, h: 95, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }) +
         '<text id="memo" x="200" y="300" text-anchor="middle" class="svg-legend" fill="#fff4d6"></text>' +
         '<text id="memo2" x="200" y="322" text-anchor="middle" class="svg-legend small" fill="#fff4d6" opacity=".85"></text>');
       c.dust.set('off');
+      c.camSet(170, 400, 1.3);
       c.say('Et sur le chemin, il y a ceux qui nous rejoignent.');
       var hero = c.$('#hero');
       function showMemo(i) {
@@ -689,6 +823,7 @@
       c.$$('.fig').forEach(function (f) { f.classList.add('walking'); });
       L.forEach(function (_, i) { c.pos(c.$('#friend' + i), null, null, null, 1); });
       c.anim(c.$('#bg'), [{ transform: 'translateX(0)' }, { transform: 'translateX(-160px)' }], { duration: 5000, fill: 'forwards' });
+      c.cam(220, 300, 1, 5000);
       await c.wait(2400);
       c.$$('.fig').forEach(function (f) { f.classList.remove('walking'); });
       c.$('#route').setAttribute('opacity', 1);
@@ -698,10 +833,11 @@
   });
 
   add({
-    id: 'III.4', act: 3, theme: 'moon', pad: 'moon',
+    id: 'III.4', act: 3, theme: 'moon', pad: 'lune',
     build: async function (c) {
       var hillD = 'M-700,640 L-700,540 Q-150,520 40,480 Q130,446 200,444 Q270,446 350,478 Q520,530 1100,540 L1100,1140 L-700,1140 Z';
-      c.html(G.sky('#1a1240', '#4a2f7a', 'violetSky') + G.starfield(80, 71, { y1: 380 }) +
+      c.html(G.sky('#1a1240', '#4a2f7a', 'violetSky', ['#9a6aff', '#ff8ac0']) + G.starfield(80, 71, { y1: 380 }) +
+        G.rays(268, 220, '#e9ecff', 12, 600, 0.22) +
         '<circle cx="268" cy="220" r="170" fill="url(#moonGlow)"/>' +
         '<circle cx="268" cy="220" r="108" fill="url(#moonGrad)"/>' +
         '<g fill="#c7cce6" opacity=".35"><circle cx="235" cy="195" r="14"/><circle cx="300" cy="250" r="20"/><circle cx="290" cy="180" r="8"/><circle cx="250" cy="268" r="7"/></g>' +
@@ -712,15 +848,18 @@
           for (var i = 0; i < 70; i++) { var x = -60 + R() * 520; var y = 470 + R() * 120 + Math.abs(x - 200) * 0.18; s += '<line x1="' + x.toFixed(0) + '" y1="' + y.toFixed(0) + '" x2="' + (x + 2 - R() * 4).toFixed(0) + '" y2="' + (y - 5 - R() * 6).toFixed(0) + '" class="grass" style="animation-delay:-' + (R() * 4).toFixed(1) + 's"/>'; }
           return s;
         })() + '</g>' +
-        fig({ id: 'hero', x: -20, y: 470, h: 80, accent: c.cfg.hero.accent }) +
-        fig({ id: 'her', x: 430, y: 486, h: 74, accent: c.cfg.companion.accent, acc: 'chignon', f: -1, opacity: 0 }) +
+        fig({ id: 'hero', x: -20, y: 470, h: 80, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }) +
+        fig({ id: 'her', x: 430, y: 486, h: 74, accent: c.cfg.companion.accent, hair: c.cfg.companion.hair || 'chignon', f: -1, opacity: 0 }) +
         '<g id="fall" opacity="0">' + star({ x: 0, y: 0, r: 4.5 }) + '</g>');
       c.dust.set('off');
-      c.audio.pad([98, 146.8]);
       var hero = c.$('#hero'), her = c.$('#her');
+      c.camSet(60, 380, 1.5);
+      c.follow(hero, { dy: -70, z: 1.4, k: 0.035 });
       hero.classList.add('walking');
-      await c.walk(hero, [[-20, 486], [60, 470], [130, 450], [178, 445]], 4000);
+      await c.walk(hero, [[-20, 486], [60, 470], [130, 450], [178, 445]], 4400);
       hero.classList.remove('walking');
+      c.follow(null);
+      c.cam(230, 330, 1.05, 3500);
       hero.classList.add('sit');
       await c.wait(1200);
       c.say('Et parfois, un chemin en croise un autre.');
@@ -742,6 +881,7 @@
       await c.wait(400);
       her.classList.add('sit');
       c.audio.piano(392, 0.6); c.audio.piano(523, 1.6);
+      c.cam(200, 405, 1.8, 10000, 'inout');
       await c.wait(2800);
       // les étoiles au-dessus se rapprochent
       c.anim(c.$('#sA'), [{ transform: 'translate(120px,110px)' }, { transform: 'translate(205px,95px)' }], { duration: 5000, fill: 'forwards', easing: 'ease-in-out' });
@@ -764,6 +904,7 @@
       await c.wait(2500);
       // ils se lèvent et poursuivent le chemin ensemble
       hero.classList.remove('sit'); her.classList.remove('sit');
+      c.cam(260, 340, 1, 5000);
       await c.wait(700);
       hero.classList.add('walking'); her.classList.add('walking');
       c.walk(her, [[214, 445], [280, 452], [360, 478], [470, 500]], 5000);
@@ -772,18 +913,20 @@
   });
 
   add({
-    id: 'III.5', act: 3, theme: 'night', pad: 'ink',
+    id: 'III.5', act: 3, theme: 'night', pad: 'lune',
     build: async function (c) {
       var L = friendsLayout(c);
-      var people = L.map(function (l, i) { return { name: l.f.name, text: l.f.memory, accent: l.f.accent, acc: l.f.accessoire, sx: 40 + i * 70, sy: 120 + (i % 2) * 60, x: -10 + i * 85 } ; });
-      people.push({ name: '', text: c.cfg.companion.star, accent: c.cfg.companion.accent, acc: 'chignon', sx: 330, sy: 150, x: 330 });
+      var people = L.map(function (l, i) { return { name: l.f.name, text: l.f.memory, accent: l.f.accent, acc: l.f.accessoire, hair: l.f.hair, sx: 40 + i * 70, sy: 120 + (i % 2) * 60, x: -10 + i * 85 } ; });
+      people.push({ name: '', text: c.cfg.companion.star, accent: c.cfg.companion.accent, hair: c.cfg.companion.hair || 'chignon', sx: 330, sy: 150, x: 330 });
       c.html(G.sky('#080a22', '#251a46') + G.starfield(110, 81, { y1: 420 }) +
         '<path d="' + G.hill(468, 22, 83, { step: 130 }) + '" fill="#141034"/>' +
         people.map(function (p, i) { return star({ id: 'ps' + i, x: p.sx, y: p.sy, r: 4.5, color: p.accent, opacity: 0 }); }).join('') +
-        people.map(function (p, i) { return fig({ id: 'p' + i, x: p.x + 30, y: 480 + (i % 2) * 6, h: 70, accent: p.accent, acc: p.acc, f: i % 2 ? -1 : 1 }); }).join('') +
-        fig({ id: 'hero', x: 220, y: 488, h: 82, accent: c.cfg.hero.accent }) +
+        people.map(function (p, i) { return fig({ id: 'p' + i, x: p.x + 30, y: 480 + (i % 2) * 6, h: 70, accent: p.accent, acc: p.acc, hair: p.hair, f: i % 2 ? -1 : 1 }); }).join('') +
+        fig({ id: 'hero', x: 220, y: 488, h: 82, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }) +
         '<text id="memo" x="200" y="300" text-anchor="middle" class="svg-legend" fill="#fff4d6"></text>' +
         '<text id="memo2" x="200" y="322" text-anchor="middle" class="svg-legend small" fill="#fff4d6" opacity=".85"></text>');
+      c.camSet(200, 440, 1.5);
+      c.cam(200, 280, 1, 8000, 'inout');
       c.say('Certaines rencontres deviennent des repères.');
       people.forEach(function (p, i) {
         var st = c.$('#ps' + i);
@@ -812,11 +955,11 @@
 
   /* ============================== ACTE IV — L'ARCHITECTE ============================== */
   function codeSky(seed) {
-    return G.sky('#020a16', '#06263a', 'codeSky') + G.starfield(40, seed || 91, { color: '#a9f3ff', y1: 380 });
+    return G.sky('#020a16', '#06263a', 'codeSky', ['#0a7a9a', '#2a3aff']) + G.starfield(40, seed || 91, { color: '#a9f3ff', y1: 380 });
   }
 
   add({
-    id: 'IV.1', act: 4, theme: 'code', pad: 'code',
+    id: 'IV.1', act: 4, theme: 'code', pad: 'scifi',
     build: async function (c) {
       var cols = 8, rows = 9, x0 = 80, y0 = 120, cw = 30, ch = 30;
       var cells = '';
@@ -840,9 +983,10 @@
         cells + circuits + code +
         '<g id="pixel" transform="translate(' + (x0 + cols * cw - 15) + ',' + (y0 + 15) + ')"><circle r="26" fill="url(#haloCyan)" class="pulse"/><rect x="-7" y="-7" width="14" height="14" fill="#bff6ff"/></g>' +
         '<rect x="-700" y="470" width="1800" height="700" fill="#041824"/>' +
-        fig({ id: 'hero', x: 60, y: 490, h: 125, accent: '#7fe9ff' }));
+        fig({ id: 'hero', x: 60, y: 490, h: 125, accent: '#7fe9ff', hair: c.cfg.hero.hair }));
       c.dust.color(CYAN);
       c.dust.set('drift', { alpha: 0.2, fraction: 0.3 });
+      c.camSet(290, 160, 2.6);
       c.say('Et peu à peu, imaginer ne suffit plus : il apprend à construire.');
       c.hint('Touche le pixel lumineux');
       var go = false;
@@ -852,6 +996,8 @@
         c.hint('');
         c.audio.blip(880);
         c.anim(c.$('#pixel'), [{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'forwards' });
+        c.audio.whoosh(1.5);
+        c.cam(190, 330, 1, 3600, 'inout');
         c.$$('.px').forEach(function (p) {
           var d = +p.getAttribute('data-d');
           c.anim(p, [{ opacity: 0 }, { opacity: 0.95 }, { opacity: 0.15 + Math.random() * 0.25 }], { duration: 1600, delay: d, fill: 'forwards' });
@@ -872,7 +1018,7 @@
   });
 
   add({
-    id: 'IV.2', act: 4, theme: 'code', pad: 'code',
+    id: 'IV.2', act: 4, theme: 'code', pad: 'scifi',
     build: async function (c) {
       var labels = c.cfg.tech.nodes.slice(0, 3);
       var R = G.rng(17), skyline = '', windows = '';
@@ -893,7 +1039,8 @@
           return '<g class="node" id="node' + i + '" transform="translate(' + n[0] + ',' + n[1] + ')"><circle r="30" fill="transparent"/><circle class="halo" r="34" fill="url(#haloCyan)" opacity=".35"/><circle r="11" fill="#062a3a" stroke="#5fe3ff" stroke-width="2.5"/><circle class="core" r="4.5" fill="#5fe3ff"/>' +
             '<text y="-22" text-anchor="middle" class="svg-legend small" fill="#bff6ff">' + esc(labels[i] || '') + '</text></g>';
         }).join('') +
-        fig({ id: 'hero', x: 70, y: 470, h: 110, accent: '#7fe9ff' }));
+        fig({ id: 'hero', x: 70, y: 470, h: 110, accent: '#7fe9ff', hair: c.cfg.hero.hair }));
+      c.camSet(200, 330, 1.25);
       c.say('Comprendre les systèmes. Relier les idées. Faire naître des possibilités.');
       c.hint('Touche les trois nœuds, dans l’ordre que tu veux');
       var lit = 0;
@@ -917,6 +1064,7 @@
             c.after(1200, function () {
               c.$$('.win').forEach(function (w) { w.setAttribute('opacity', 0.9); });
               c.dust.set('drift', { alpha: 0.35, fraction: 0.6 });
+              c.cam(200, 300, 0.92, 3000);
               c.audio.chime(1046);
               var hero = c.$('#hero');
               hero.classList.add('walking');
@@ -929,7 +1077,7 @@
   });
 
   add({
-    id: 'IV.3', act: 4, theme: 'code', pad: 'code',
+    id: 'IV.3', act: 4, theme: 'code', pad: 'scifi',
     build: async function (c) {
       var titles = c.cfg.tech.learning.slice(0, 3);
       var n = titles.length;
@@ -953,7 +1101,7 @@
         '<circle cx="290" cy="230" r="40" fill="url(#haloCyan)"/></g>' +
         '<rect x="-700" y="480" width="1800" height="700" fill="#031520"/>' +
         titles.map(function (_, i) { return win(i); }).join('') +
-        fig({ id: 'hero', x: 50, y: 480, h: 110, accent: '#7fe9ff' }));
+        fig({ id: 'hero', x: 50, y: 480, h: 110, accent: '#7fe9ff', hair: c.cfg.hero.hair }));
       c.say('Même aujourd’hui, il reste curieux de ce qu’il ne connaît pas encore.');
       c.hint('Fais glisser une fenêtre');
       var hero = c.$('#hero');
@@ -996,7 +1144,7 @@
   });
 
   add({
-    id: 'IV.4', act: 4, theme: 'code', pad: 'code',
+    id: 'IV.4', act: 4, theme: 'code', pad: 'scifi',
     build: async function (c) {
       var L = friendsLayout(c);
       c.html(codeSky(101) +
@@ -1008,31 +1156,40 @@
         '</g>' +
         L.map(function (l, i) { return star({ id: 'ms' + i, x: 60 + i * 80, y: 110 + (i % 2) * 40, r: 3.5, color: l.f.accent, opacity: 0 }); }).join('') +
         star({ id: 'msC', x: 330, y: 120, r: 3.5, color: c.cfg.companion.accent, opacity: 0 }) +
+        G.rays(200, 355, '#7fe9ff', 10, 520, 0.3) +
         '<g id="door"><rect x="168" y="240" width="64" height="230" rx="4" fill="url(#haloCyan)" opacity=".35" filter="url(#blur6)"/>' +
         '<rect x="176" y="250" width="48" height="220" rx="3" fill="#bff6ff" opacity=".2" stroke="#e6fdff" stroke-width="2"/>' +
         '<rect id="doorL" x="176" y="250" width="24" height="220" fill="#0b3a50" stroke="#5fe3ff"/><rect id="doorR" x="200" y="250" width="24" height="220" fill="#0b3a50" stroke="#5fe3ff"/></g>' +
         '<rect x="-700" y="470" width="1800" height="700" fill="#031520"/>' +
-        '<rect id="flash" x="-700" y="-500" width="1800" height="1640" fill="#e6fdff" opacity="0" pointer-events="none"/>' +
-        fig({ id: 'hero', x: 20, y: 470, h: 100, accent: '#7fe9ff' }));
+        fig({ id: 'hero', x: 20, y: 470, h: 100, accent: '#7fe9ff', hair: c.cfg.hero.hair }));
       c.say('Ce qu’il construit ne s’arrête pas à ce qu’il sait déjà faire.');
       var hero = c.$('#hero');
+      c.camSet(80, 400, 1.35);
+      c.cam(180, 340, 1.1, 3000);
       hero.classList.add('walking');
       await c.walk(hero, [[20, 470], [140, 470]], 2600);
       hero.classList.remove('walking');
       c.$$('[id^="ms"]').forEach(function (s, i) { c.anim(s, [{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: i * 250, fill: 'forwards' }); });
       c.hint('Touche la porte');
-      c.audio.pad([123.5, 185]);
+      c.audio.duck(0.3, 2);
       var opened = false;
       async function open() {
         if (opened) return;
         opened = true;
         c.hint('');
-        c.audio.pad(c.audio.PADS.code);
+        c.audio.duck(1, 0.5);
+        c.audio.whoosh(1.6);
         c.audio.chime(659); c.audio.chime(988);
         c.anim(c.$('#doorL'), [{ transform: 'translateX(0)' }, { transform: 'translateX(-22px)' }], { duration: 1400, fill: 'forwards' });
         c.anim(c.$('#doorR'), [{ transform: 'translateX(0)' }, { transform: 'translateX(22px)' }], { duration: 1400, fill: 'forwards' });
-        await c.wait(900);
-        await c.anim(c.$('#flash'), [{ opacity: 0 }, { opacity: 0.85 }, { opacity: 0 }], { duration: 2000, fill: 'forwards' });
+        await c.wait(700);
+        c.cam(200, 360, 7, 1700, 'in');
+        await c.wait(1300);
+        c.flash('#e6fdff', 1400);
+        c.audio.hit();
+        await c.wait(500);
+        c.camSet(200, 330, 1.25);
+        c.cam(200, 320, 1, 3000, 'out');
         c.ready();
       }
       c.tap(c.$('#door'), open, 'La porte de lumière');
@@ -1048,7 +1205,7 @@
   }
 
   add({
-    id: 'V.1', act: 5, theme: 'converge', pad: 'converge',
+    id: 'V.1', act: 5, theme: 'converge', pad: 'finale',
     build: async function (c) {
       var isl = [
         [105, 190, '<path d="M-50,0 Q-30,-28 -8,-10 Q10,-30 50,0 Z" fill="#c9743a"/><circle cx="20" cy="-34" r="9" fill="#ffd27a"/>'],
@@ -1057,13 +1214,15 @@
         [295, 360, '<g fill="#0b3a50" stroke="#5fe3ff" stroke-width="1.2"><rect x="-30" y="-36" width="14" height="36"/><rect x="-12" y="-52" width="16" height="52"/><rect x="8" y="-30" width="14" height="30"/></g>'],
       ];
       var thread = 'M40,110 C120,120 60,170 105,180 S260,150 295,165 S330,260 200,270 S70,330 105,365 S260,330 295,350 S360,440 300,470';
-      c.html(G.sky('#050717', '#1a1440') + G.starfield(110, 111, { y1: 460 }) +
+      c.html(G.sky('#050717', '#1a1440', 'v1', ['#5a3aaa', '#aa6a2a']) + G.starfield(110, 111, { y1: 460 }) +
         '<g id="isles">' + isl.map(function (s, i) { return island(s[0], s[1], s[2], 'is' + i); }).join('') + '</g>' +
         '<path id="thread" d="' + thread + '" fill="none" stroke="#ffd27a" stroke-width="2" stroke-opacity=".25"/>' +
         '<path id="threadOn" d="' + thread + '" fill="none" stroke="#ffd27a" stroke-width="3" opacity="0"/>' +
         '<path id="threadHit" d="' + thread + '" fill="none" stroke="transparent" stroke-width="44"/>');
       c.dust.color(GOLD);
       c.dust.set('drift', { alpha: 0.3, fraction: 0.5 });
+      c.camSet(200, 300, 2.8);
+      c.cam(200, 290, 1, 5500, 'out');
       c.say('Des origines. Des choix. Des passions. Des rencontres. Des horizons.');
       c.$$('.island .float').forEach(function (el, i) { el.style.animationDelay = (-i * 1.1) + 's'; });
       c.hint('Touche le fil lumineux');
@@ -1108,7 +1267,7 @@
   }
 
   add({
-    id: 'V.2', act: 5, theme: 'converge', pad: 'converge',
+    id: 'V.2', act: 5, theme: 'converge', pad: 'finale',
     build: async function (c) {
       var pts = constellation(c);
       var main = ['origines', 'choix', 'passions', 'elle', 'horizons'];
@@ -1116,15 +1275,17 @@
       var lines = [];
       for (var i = 0; i < main.length - 1; i++) lines.push([P(main[i]), P(main[i + 1])]);
       pts.forEach(function (p) { if (p.parent != null) lines.push([pts[p.parent], p]); });
-      c.html(G.sky('#03040f', '#141238') + G.starfield(130, 121, { y1: 470 }) +
+      c.html(G.sky('#03040f', '#141238', 'v2', ['#4a3aaa', '#2a6aaa']) + G.starfield(130, 121, { y1: 470 }) +
         '<g id="lines" stroke="#ffe9b8" stroke-opacity=".55" stroke-width="1.2">' + lines.map(function (l, i) { return '<path class="cl" d="M' + l[0].x + ',' + l[0].y + ' L' + l[1].x + ',' + l[1].y + '" opacity="0"/>'; }).join('') + '</g>' +
         '<g opacity=".5">' + star({ x: 372, y: 120, r: 2 }) + star({ x: 360, y: 80, r: 1.6 }) + '</g>' +
         pts.map(function (p, i) { return star({ id: 'cs' + i, x: p.x, y: p.y, r: p.r, color: p.color, opacity: 0 }); }).join('') +
         '<text id="memo" x="200" y="400" text-anchor="middle" class="svg-legend" fill="#fff4d6"></text>' +
         '<text id="memo2" x="200" y="422" text-anchor="middle" class="svg-legend small" fill="#fff4d6" opacity=".85"></text>' +
         '<rect x="-700" y="500" width="1800" height="700" fill="#07081a"/>' +
-        fig({ id: 'hero', x: 70, y: 500, h: 120, accent: c.cfg.hero.accent, cls: 'look-up' }));
+        fig({ id: 'hero', x: 70, y: 500, h: 120, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair, cls: 'look-up' }));
       c.dust.set('off');
+      c.camSet(100, 420, 1.8);
+      c.cam(200, 250, 1, 6000, 'inout');
       c.say('Aucun de ces fragments ne raconte tout. Ensemble, ils dessinent un univers.');
       pts.forEach(function (p, i) {
         c.anim(c.$('#cs' + i), [{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: i * 300, fill: 'forwards' });
@@ -1148,18 +1309,19 @@
   });
 
   add({
-    id: 'V.3', act: 5, theme: 'converge', pad: 'converge', final: true,
+    id: 'V.3', act: 5, theme: 'converge', pad: 'finale', final: true,
     build: async function (c) {
       var far = '', R = G.rng(131);
       for (var i = 0; i < 9; i++) far += star({ x: (30 + R() * 340).toFixed(0), y: (60 + R() * 220).toFixed(0), r: 1.5 + R() * 2, cls: 'far', opacity: 0 });
-      c.html(G.sky('#04051a', '#25205a') + G.starfield(140, 141, { y1: 440 }) +
+      c.html(G.sky('#04051a', '#25205a', 'v3', ['#6a4aba', '#ba7a3a']) + G.starfield(140, 141, { y1: 440 }) +
         far +
         '<path d="M-700,640 L-700,500 Q200,440 1100,500 L1100,1140 L-700,1140 Z" fill="#0d0f2c"/>' +
         '<path d="M-700,500 Q200,440 1100,500" fill="none" stroke="#ffd27a" stroke-opacity=".35"/>' +
-        fig({ id: 'hero', x: 200, y: 472, h: 120, accent: c.cfg.hero.accent }));
+        fig({ id: 'hero', x: 200, y: 472, h: 120, accent: c.cfg.hero.accent, hair: c.cfg.hero.hair }));
       c.dust.set('drift', { alpha: 0.3, fraction: 0.5 });
-      c.audio.pad(c.audio.PADS.converge);
       var hero = c.$('#hero');
+      c.camSet(200, 430, 1.7);
+      c.cam(200, 300, 1, 7000, 'inout');
       await c.wait(1200);
       hero.classList.add('look-up');
       c.say('Ton univers ne s’arrête pas ici. La suite reste à écrire.');

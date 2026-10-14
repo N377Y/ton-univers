@@ -62,18 +62,20 @@ window.AU.config = {
   ],
 
   /* --- Silhouettes ------------------------------------------- */
-  hero: { accent: '#ffd27a' },
+  // coiffure : 'court' | 'afro' | 'locks' | 'ras' | 'long' | 'tresses' | 'chignon' | 'queue'
+  hero: { accent: '#ffd27a', hair: 'court' },
   companion: {
     accent: '#ff9fc4',
+    hair: 'chignon',
     star: '[Un souvenir que vous seuls comprenez]',
   },
 
   /* --- Acte III : les compagnons (2 à 4) --------------------- */
   // accessoire : 'casquette' | 'echarpe' | 'sac' | 'casque' | 'aucun'
   friends: [
-    { name: '[Ami·e 1]', accent: '#7fd8ff', accessoire: 'casquette', memory: '[Une anecdote, un mot, un souvenir]' },
-    { name: '[Ami·e 2]', accent: '#b6f28c', accessoire: 'echarpe',   memory: '[Une anecdote, un mot, un souvenir]' },
-    { name: '[Ami·e 3]', accent: '#c7a6ff', accessoire: 'sac',       memory: '[Une anecdote, un mot, un souvenir]' },
+    { name: '[Ami·e 1]', accent: '#7fd8ff', accessoire: 'casquette', hair: 'court', memory: '[Une anecdote, un mot, un souvenir]' },
+    { name: '[Ami·e 2]', accent: '#b6f28c', accessoire: 'echarpe',   hair: 'afro',  memory: '[Une anecdote, un mot, un souvenir]' },
+    { name: '[Ami·e 3]', accent: '#c7a6ff', accessoire: 'sac',       hair: 'queue', memory: '[Une anecdote, un mot, un souvenir]' },
   ],
 
   /* --- Acte IV : l'Architecte -------------------------------- */

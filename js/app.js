@@ -53,22 +53,59 @@
 
   var EASE = {
     linear: function (t) { return t; },
+    cine: function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; },
+    out: function (t) { return 1 - Math.pow(1 - t, 3); },
+    in: function (t) { return t * t * t; },
     inout: function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; },
   };
 
   /* ---------------- contexte d'une scène ---------------- */
   function makeCtx(scene) {
     var c = { alive: true, cfg: cfg, dust: dust, audio: audio, zone: mode === 'zone', scene: scene };
+    var followId = 0;
     var timers = [], anims = [], cleanups = [];
     var k = function (ms) { return state.reduced ? ms * 0.5 : ms; };
 
     c.html = function (markup) {
       stage.innerHTML = '<svg class="scene" viewBox="0 0 400 640" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' +
-        G.esc(ACTS[scene.act].name) + '">' + G.defs() + markup + '</svg>';
+        G.esc(ACTS[scene.act].name) + '">' + G.defs() + '<g id="cam">' + markup + '</g></svg>';
       c.svg = stage.firstChild;
+      c.camEl = c.svg.querySelector('#cam');
       fitViewBox();
-      updateMatrix();
+      var vb = viewBox();
+      cam = { x: vb[0] + vb[2] / 2, y: vb[1] + vb[3] / 2, z: 1 };
+      applyCam();
       return c.svg;
+    };
+    /* --- caméra : c.cam(x, y, zoom, ms) cadre le point (x, y) du décor --- */
+    c.camSet = function (x, y, z) { cam = { x: x, y: y, z: z || 1 }; applyCam(); };
+    c.cam = function (x, y, z, ms, ease) {
+      var from = { x: cam.x, y: cam.y, z: cam.z };
+      if (x == null) x = from.x; if (y == null) y = from.y; if (z == null) z = from.z;
+      return c.tween(ms || 1500, function (t) {
+        cam = { x: from.x + (x - from.x) * t, y: from.y + (y - from.y) * t, z: from.z * Math.pow(z / from.z, t) };
+        applyCam();
+      }, ease || 'cine');
+    };
+    c.camReset = function (ms) { var vb = viewBox(); return c.cam(vb[0] + vb[2] / 2, vb[1] + vb[3] / 2, 1, ms); };
+    // suivi d'une silhouette en douceur (null pour arrêter)
+    c.follow = function (el, o) {
+      followId++;
+      if (!el) return;
+      o = o || {};
+      var my = followId;
+      (function loop() {
+        if (!c.alive || my !== followId) return;
+        var tx = +el.dataset.x + (o.dx || 0), ty = +el.dataset.y + (o.dy || 0), tz = o.z || cam.z, k = o.k || 0.05;
+        cam = { x: cam.x + (tx - cam.x) * k, y: cam.y + (ty - cam.y) * k, z: cam.z + (tz - cam.z) * k };
+        applyCam();
+        requestAnimationFrame(loop);
+      })();
+    };
+    c.flash = function (color, ms) {
+      var f = $('#flash');
+      f.style.background = color || '#fff';
+      f.animate([{ opacity: 0 }, { opacity: 0.95, offset: 0.25 }, { opacity: 0 }], { duration: ms || 700, easing: 'ease-out' });
     };
     c.$ = function (s) { return c.svg.querySelector(s); };
     c.$$ = function (s) { return Array.prototype.slice.call(c.svg.querySelectorAll(s)); };
@@ -82,7 +119,7 @@
     };
     c.wait = function (ms) { return new Promise(function (res) { c.after(ms, res); }); };
     c.tween = function (ms, fn, ease) {
-      var dur = k(ms), e = EASE[ease || 'inout'], t0 = performance.now();
+      var dur = k(ms), e = EASE[ease || 'inout'] || EASE.inout, t0 = performance.now();
       return new Promise(function (res) {
         function step(now) {
           if (!c.alive) return;
@@ -220,6 +257,7 @@
     };
     c.leave = function () {
       c.alive = false;
+      followId++;
       timers.forEach(clearTimeout);
       cleanups.forEach(function (f) { f(); });
       return function () { anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); };
@@ -232,12 +270,29 @@
     var land = innerWidth > innerHeight * 1.15 && innerHeight < 620;
     document.body.classList.toggle('land', land);
     if (ctx && ctx.svg) ctx.svg.setAttribute('viewBox', land ? '0 40 400 500' : '0 0 400 640');
+    updateMatrix();
   }
 
-  function updateMatrix() {
-    if (ctx && ctx.svg && ctx.svg.getScreenCTM) dust.setMatrix(ctx.svg.getScreenCTM());
+  var cam = { x: 200, y: 320, z: 1 };
+  function viewBox() {
+    return (ctx && ctx.svg ? ctx.svg.getAttribute('viewBox') : '0 0 400 640').split(' ').map(Number);
   }
-  addEventListener('resize', function () { fitViewBox(); updateMatrix(); });
+  function applyCam() {
+    if (!ctx || !ctx.camEl) return;
+    var vb = viewBox(), cx0 = vb[0] + vb[2] / 2, cy0 = vb[1] + vb[3] / 2;
+    ctx.camEl.setAttribute('transform', 'translate(' + cx0 + ',' + cy0 + ') scale(' + cam.z.toFixed(4) + ') translate(' + (-cam.x).toFixed(2) + ',' + (-cam.y).toFixed(2) + ')');
+    updateMatrix();
+  }
+  // repère du décor -> pixels du canvas (calculé à la main : indépendant des transformations CSS de #cine)
+  function updateMatrix() {
+    if (!ctx || !ctx.svg) return;
+    var vb = viewBox(), W = stage.clientWidth, H = stage.clientHeight - (document.body.classList.contains('land') ? 92 : 0);
+    var s = Math.min(W / vb[2], H / vb[3]);
+    var ox = (W - vb[2] * s) / 2 - vb[0] * s, oy = (H - vb[3] * s) / 2 - vb[1] * s;
+    var cx0 = vb[0] + vb[2] / 2, cy0 = vb[1] + vb[3] / 2;
+    dust.setMatrix({ a: s * cam.z, b: 0, c: 0, d: s * cam.z, e: ox + s * (cx0 - cam.z * cam.x), f: oy + s * (cy0 - cam.z * cam.y) });
+  }
+  addEventListener('resize', function () { fitViewBox(); applyCam(); });
 
   /* ---------------- texte à l'écran ---------------- */
   var sayTimer = null;
@@ -245,9 +300,22 @@
     clearTimeout(sayTimer);
     caption.classList.add('out');
     sayTimer = setTimeout(function () {
-      caption.textContent = t || '';
+      caption.textContent = '';
+      var sr = document.createElement('span');
+      sr.className = 'visually-hidden';
+      sr.textContent = t || '';
+      caption.appendChild(sr);
+      (t || '').split(' ').forEach(function (w, i) {
+        var sp = document.createElement('span');
+        sp.className = 'w';
+        sp.setAttribute('aria-hidden', 'true');
+        sp.style.animationDelay = (state.reduced ? 0 : i * 70) + 'ms';
+        sp.textContent = w;
+        caption.appendChild(sp);
+        caption.appendChild(document.createTextNode(' '));
+      });
       caption.classList.remove('out');
-    }, 260);
+    }, 320);
   }
 
   /* ---------------- navigation ---------------- */
@@ -269,19 +337,25 @@
       if (finishOld) finishOld();
       cur = i;
       document.body.dataset.theme = sc.theme;
-      audio.pad(audio.PADS[sc.pad]);
+      audio.track(sc.pad);
+      audio.duck(1);
       if (mode === 'story' && !sc.lock) { state.idx = i; save(); }
       updateHud(sc);
       updateControls(sc);
       if (sc.lock) { $('#lockform').hidden = false; } else { $('#lockform').hidden = true; }
       $('#zonecard').hidden = !(mode === 'zone' && currentZone);
-      ctx = makeCtx(sc);
-      var p = sc.build(ctx);
-      if (p && p.catch) p.catch(function (e) { console.error(e); });
-      stage.classList.remove('fading');
-      transitioning = false;
-      if (mode === 'story' && sc.act !== prevAct && sc.act > 0) showActCard(sc.act);
-    }, ctx ? 420 : 0);
+      var start = function () {
+        ctx = makeCtx(sc);
+        var p = sc.build(ctx);
+        if (p && p.catch) p.catch(function (e) { console.error(e); });
+        stage.classList.remove('fading');
+        var en = $('#enter');
+        en.classList.remove('in'); void en.offsetWidth; en.classList.add('in');
+        transitioning = false;
+      };
+      if (mode === 'story' && sc.act !== prevAct && sc.act > 0) { ctx = null; stage.innerHTML = ''; showActIntro(sc.act, start); }
+      else start();
+    }, ctx ? 600 : 0);
   }
 
   function next() {
@@ -314,12 +388,26 @@
     nextBtn.querySelector('span').textContent = mode === 'zone' ? 'Retour à la carte' : 'Continuer';
   }
 
-  function showActCard(act) {
-    var a = ACTS[act], el = $('#actcard');
-    el.innerHTML = '<span class="num">Acte ' + a.num + '</span><span class="name">' + a.name + '</span><span class="sub">' + a.sub + '</span>';
-    el.classList.remove('show');
-    void el.offsetWidth;
-    el.classList.add('show');
+  // carton d'acte plein écran, façon générique de film ; un toucher le passe
+  function showActIntro(act, done) {
+    var a = ACTS[act], el = $('#actintro');
+    el.innerHTML = '<div class="bar top"></div><div class="bar bot"></div><div class="t"><span class="num">Acte ' + a.num + '</span>' +
+      '<span class="name">' + a.name.split('').map(function (ch, i) { return '<i style="animation-delay:' + (200 + i * 45) + 'ms">' + (ch === ' ' ? '&nbsp;' : ch) + '</i>'; }).join('') + '</span>' +
+      '<span class="sub">' + a.sub + '</span></div>';
+    el.hidden = false;
+    el.classList.remove('show', 'out'); void el.offsetWidth; el.classList.add('show');
+    audio.whoosh(1.4);
+    var finished = false;
+    function end() {
+      if (finished) return;
+      finished = true;
+      clearTimeout(tm);
+      el.classList.add('out');
+      done();
+      setTimeout(function () { el.hidden = true; el.classList.remove('show', 'out'); }, 900);
+    }
+    var tm = setTimeout(end, state.reduced ? 1600 : 3000);
+    el.onclick = end;
   }
 
   /* ---------------- le sas ---------------- */
@@ -421,7 +509,8 @@
     $('#progress').hidden = true;
     $('#actlabel').textContent = 'Ton univers';
     document.body.dataset.theme = 'converge';
-    audio.pad(audio.PADS.converge);
+    audio.track('finale');
+    audio.duck(1);
     dust.color([255, 206, 115]);
     dust.set('drift', { alpha: 0.3, fraction: 0.5 });
     if (!$('#mapsvg').childElementCount) buildMap();

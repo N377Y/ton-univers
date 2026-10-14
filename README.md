@@ -10,8 +10,12 @@ Le site suit le storyboard *« Bible narrative et storyboard du site interactif 
 - **Mobile d'abord** : écran vertical ; le mode paysage recadre la scène.
 - **Impossible de se bloquer** : « Continuer » est toujours là, chaque interaction est facultative
   ou se déclenche toute seule, et il n'y a aucun compte à rebours.
-- **Son coupé par défaut** : il est proposé juste après le déverrouillage. Les sons sont générés
-  en direct, donc aucune musique sous licence. Tout est écrit à l'écran.
+- **Son coupé par défaut** : il est proposé juste après le déverrouillage. Musique et effets sont
+  synthétisés en direct, donc aucune musique sous licence. Une piste par acte : aventure africaine
+  (djembé, kalimba, cuivres), réflexion (piano, cordes), opening de manga (batterie, guitare
+  saturée), science-fiction (arpèges synthétiques) et un final qui reprend les thèmes.
+- **Mise en scène** : caméra qui suit et zoome, cartons d'acte façon générique de film, grain et
+  vignettage, texte qui apparaît mot à mot, séquence « opening » en plans rapides dans l'acte III.
 - **Accessibilité** : option « Réduire les animations » (activée d'office si le système la
   demande), navigation au clavier (Tab, Entrée, flèches ← →), boutons explicites.
 - **Progression enregistrée** sur l'appareil, avec les choix « Reprendre » et « Recommencer ».
@@ -43,6 +47,7 @@ Tout se règle dans **`js/config.js`**. Les textes entre `[crochets]` sont des e
 | Symboles transmis et leurs légendes | `origins.symbols` |
 | Pensées (philosophie) | `thoughts` |
 | Amis : nom, couleur, accessoire, souvenir | `friends` (2 à 4) |
+| Silhouettes : couleur et coiffure | `hero`, `companion`, `friends[].hair` |
 | Votre rencontre : couleur, souvenir de l'étoile | `companion` |
 | Informatique : nœuds, apprentissages, intérêts | `tech` |
 | Fragments de la constellation | `fragments` |
