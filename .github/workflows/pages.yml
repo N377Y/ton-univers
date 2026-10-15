@@ -1,0 +1,35 @@
+# Publie le site sur GitHub Pages à chaque envoi sur la branche du site.
+name: Publier le site
+
+on:
+  push:
+    branches: [claude/interactive-site-7wc6t0, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Préparer les fichiers du site
+        run: |
+          mkdir _site
+          cp -r index.html css js outils _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
