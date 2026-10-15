@@ -17,8 +17,7 @@ window.AU.config = {
   /* --- Le sas ------------------------------------------------ */
   // Empreinte du code final (le code lui-même n'apparaît jamais ici).
   // Pour la générer : ouvrir outils/code.html, taper le code, copier le résultat.
-  // Valeur actuelle = code provisoire « UNIVERS ».
-  codeHash: 'bf0f6943ac44e072520b6defa250d554ba84ae422bc401ccd28e248f03be3a49',
+  codeHash: 'e4d2fb51f79969cd4ccb2bfff42f46a5a7091fd3f62a63f923b48196c7982192',
 
   // true : à chaque retour sur le site, le code est redemandé.
   askCodeOnReturn: false,
@@ -27,26 +26,30 @@ window.AU.config = {
   origins: {
     // Point lumineux sur la carte stylisée de l'Afrique (0–100 en x et y,
     // 0,0 = coin nord-ouest). null = aucun point mis en évidence.
-    mapPoint: null,
+    mapPoint: { x: 43, y: 44, label: 'Cameroun' },
 
-    // 2 ou 3 tableaux liés à ses origines réelles.
-    // motif : 'collines' | 'fleuve' | 'plateau' | 'savane' | 'cote'
+    // Tableaux (jusqu'à 5), du plus ancien au plus intime.
+    // motif : 'pyramides' | 'chefferie' | 'volcan' | 'foret' | 'ville' | 'collines' | 'fleuve' | 'plateau' | 'savane' | 'cote'
+    // photo (facultatif) : chemin d'une image, par ex. 'img/chefferie.jpg' ; elle remplace le dessin.
     tableaux: [
-      { title: '[Terre d’origine — à préciser]', motif: 'collines',
-        palette: ['#f2b25c', '#c9743a', '#7a3b22', '#3b1d17'] },
-      { title: '[Région / paysage — à préciser]', motif: 'fleuve',
-        palette: ['#f7cf7a', '#b4823e', '#5e4a2b', '#2a2219'] },
-      { title: '[Lieu de mémoire — à préciser]', motif: 'plateau',
-        palette: ['#ffd99a', '#d08b4a', '#8c4a2f', '#40211a'] },
+      { title: 'Les pyramides de Kemet', sub: 'Égypte ancienne · la mémoire la plus lointaine', motif: 'pyramides',
+        palette: ['#f6c46a', '#e09a45', '#b8722f', '#6e3f1c'] },
+      { title: 'La chefferie de Batié', sub: 'Ouest-Cameroun · pays bamiléké', motif: 'chefferie',
+        palette: ['#f2a65a', '#6b7a3a', '#3e4a24', '#2a1a10'] },
+      { title: 'Le mont Cameroun', sub: 'Le « Char des dieux »', motif: 'volcan',
+        palette: ['#f7d08a', '#8a6a7a', '#3e5a3a', '#1e2c1a'] },
+      { title: 'Mbalmayo et le Nyong', sub: 'La forêt au bord de l’eau', motif: 'foret',
+        palette: ['#e8c27a', '#3e6a3a', '#24452a', '#122a1a'] },
+      { title: 'Mobil Omnisport, Yaoundé', sub: 'Le quartier où il a grandi', motif: 'ville',
+        palette: ['#f0a060', '#a8561c', '#5a2e18', '#2a160c'] },
     ],
 
-    // Symboles ou objets transmis (formes abstraites tant que rien n'est choisi).
-    // forme : 'cercle' | 'triangle' | 'losange' | 'vague' | 'spirale'
+    // Symboles transmis. forme : 'ankh' | 'sept' | 'lion' | 'crane' | 'cercle' | 'triangle' | 'losange' | 'vague' | 'spirale'
     symbols: [
-      { forme: 'cercle',   label: '[Symbole 1]', legend: '[Légende courte — fait vérifié ou métaphore ?]' },
-      { forme: 'triangle', label: '[Symbole 2]', legend: '[Légende courte]' },
-      { forme: 'vague',    label: '[Symbole 3]', legend: '[Légende courte]' },
-      { forme: 'losange',  label: '[Symbole 4]', legend: '[Légende courte]' },
+      { forme: 'ankh',  label: 'L’Ânkh', legend: 'La clé de la vie, héritée de l’Égypte ancienne.' },
+      { forme: 'sept',  label: 'Le 7', legend: 'Son chiffre. Pour lui, il porte chance.' },
+      { forme: 'lion',  label: 'La tête de lion', legend: 'La force tranquille, celle qui veille.' },
+      { forme: 'crane', label: 'Les crânes des ancêtres', legend: 'Chez les Bamiléké, on les garde et on les honore : ceux qui nous précèdent restent avec nous.' },
     ],
 
     // Sources affichées dans la carte finale (facultatif).
@@ -54,52 +57,56 @@ window.AU.config = {
   },
 
   /* --- Acte II : l'Équilibre --------------------------------- */
-  // Pensées retrouvées dans la carte (« Chemin des choix »).
-  thoughts: [
-    'On ne choisit pas toujours ce qui arrive. On peut apprendre à choisir comment avancer.',
-    'Avancer n’a jamais voulu dire ne jamais tomber.',
-    'Réfléchir. Choisir. Apprendre. Recommencer.',
-  ],
+  // Pensées citées pendant l'acte II et retrouvées dans la carte (« Chemin des choix »).
+  quotes: {
+    connais: { text: 'Connais-toi toi-même, et tu connaîtras l’univers et les dieux.', by: 'Inscription de Delphes, chère à Socrate' },
+    controle: { text: 'Concentre-toi sur ce qui dépend de toi. Le reste ne t’appartient pas.', by: 'D’après Épictète et Marc Aurèle' },
+    itachi: { text: 'Jusqu’au bout, chacun de nous reste capable du meilleur comme du pire.', by: 'D’après Itachi Uchiwa, Naruto' },
+    fanon: { text: 'Chaque génération doit, dans une relative opacité, découvrir sa mission, la remplir ou la trahir.', by: 'Frantz Fanon, Les Damnés de la terre' },
+  },
 
   /* --- Silhouettes ------------------------------------------- */
-  // coiffure : 'court' | 'afro' | 'locks' | 'ras' | 'long' | 'tresses' | 'chignon' | 'queue'
-  hero: { accent: '#ffd27a', hair: 'court' },
+  // coiffure : 'fade' | 'boucles' | 'court' | 'afro' | 'locks' | 'ras' | 'long' | 'tresses' | 'chignon' | 'queue'
+  hero: { accent: '#c98a4b', hair: 'fade' },
   companion: {
-    accent: '#ff9fc4',
-    hair: 'chignon',
-    star: '[Un souvenir que vous seuls comprenez]',
+    accent: '#e48ad0',
+    hair: 'boucles',
+    hairColor: '#8e3f8c',
+    star: 'Je ne suis peut-être pas Hinata… mais cette lune-là, c’est la nôtre.',
   },
 
   /* --- Acte III : les compagnons (2 à 4) --------------------- */
   // accessoire : 'casquette' | 'echarpe' | 'sac' | 'casque' | 'aucun'
   friends: [
-    { name: '[Ami·e 1]', accent: '#7fd8ff', accessoire: 'casquette', hair: 'court', memory: '[Une anecdote, un mot, un souvenir]' },
-    { name: '[Ami·e 2]', accent: '#b6f28c', accessoire: 'echarpe',   hair: 'afro',  memory: '[Une anecdote, un mot, un souvenir]' },
-    { name: '[Ami·e 3]', accent: '#c7a6ff', accessoire: 'sac',       hair: 'queue', memory: '[Une anecdote, un mot, un souvenir]' },
+    { name: 'Mydrane', accent: '#7fb8ff', accessoire: 'casquette', hair: 'court', memory: '« Rien cassé aujourd’hui, Junior ? »' },
   ],
+
+  // Mangas qui l'ont accompagné : des clins d'œil dessinés dans l'acte III (aucun personnage recopié).
+  mangas: ['Naruto', 'One Piece', 'Les Chevaliers du Zodiaque', 'Fullmetal Alchemist', 'Avatar'],
 
   /* --- Acte IV : l'Architecte -------------------------------- */
   tech: {
-    // Les trois nœuds de la cité (n'importe quel ordre).
-    nodes: ['Relier', 'Construire', 'Allumer'],
+    // Les trois nœuds de la cité (n'importe quel ordre) : le chemin de la donnée.
+    nodes: ['Collecter', 'Transformer', 'Révéler'],
     // Titres des fenêtres de savoir (IV.3).
-    learning: ['[Ce qu’il apprend en ce moment]', '[Un sujet qui l’intrigue]', '[Un horizon à venir]'],
-    // Centres d'intérêt techniques confirmés (carte « Cité de demain »).
-    interests: ['[Domaine professionnel]', '[Compétence]', '[Sujet en cours d’apprentissage]'],
+    learning: ['Formation Data Engineer', 'Relire Les Damnés de la terre', 'La géopolitique'],
+    // Ce qui l'attend derrière la porte (IV.4).
+    horizon: ['Un CDI', 'Sa startup'],
+    // Ce qu'on retrouve dans la carte (« Cité de demain »).
+    interests: ['Data analyst et data engineer', 'En formation Data Engineer', 'Passionné de géopolitique', 'À l’horizon : un CDI, puis lancer sa startup'],
   },
 
   /* --- Acte V : la convergence ------------------------------- */
   // Fragments révélés par les étoiles des chapitres (V.2).
   fragments: {
-    origines: 'Des origines.',
-    choix: 'Des choix.',
-    passions: 'Des passions.',
-    horizons: 'Des horizons.',
+    origines: 'De Batié à Yaoundé.',
+    choix: 'Connais-toi toi-même.',
+    passions: 'Des pages, des amis, une lune.',
+    horizons: 'Des données, et demain.',
   },
 
   // Message personnel discret, affiché seulement dans la carte (« Horizon ouvert »).
-  // Laisser vide pour une fin totalement neutre.
-  finalMessage: '',
+  finalMessage: 'Merci de m’avoir laissé une place dans ton univers. La suite, on l’écrit ensemble.',
 
   // Vœu affiché en grand à la toute fin, sous la dernière phrase. Laisser vide pour l'enlever.
   birthday: 'Joyeux anniversaire',

@@ -30,7 +30,7 @@
       '<filter id="blur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>' +
       '<filter id="blur14" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>' +
       '<radialGradient id="halo"><stop offset="0" stop-color="#fff6d8" stop-opacity=".95"/><stop offset=".3" stop-color="#ffd27a" stop-opacity=".45"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>' +
-      '<radialGradient id="haloCyan"><stop offset="0" stop-color="#e6fdff" stop-opacity=".95"/><stop offset=".3" stop-color="#5fe3ff" stop-opacity=".45"/><stop offset="1" stop-color="#5fe3ff" stop-opacity="0"/></radialGradient>' +
+      '<radialGradient id="haloCyan"><stop offset="0" stop-color="#e8f2ff" stop-opacity=".95"/><stop offset=".3" stop-color="#6cb8ff" stop-opacity=".45"/><stop offset="1" stop-color="#6cb8ff" stop-opacity="0"/></radialGradient>' +
       '<radialGradient id="moonGrad" cx=".42" cy=".4" r=".65"><stop offset="0" stop-color="#fbfbff"/><stop offset=".6" stop-color="#dfe3f5"/><stop offset="1" stop-color="#b9bfdc"/></radialGradient>' +
       '<radialGradient id="moonGlow"><stop offset=".55" stop-color="#e9ecff" stop-opacity=".35"/><stop offset="1" stop-color="#e9ecff" stop-opacity="0"/></radialGradient>' +
       '</defs>';
@@ -52,6 +52,8 @@
         '<g fill="none" stroke-linecap="round" stroke-width="3"><path d="M-6,-10 Q-9,0 -7,12" stroke-dasharray="3 1.2"/><path d="M-3,-12 Q-5,0 -3,13" stroke-dasharray="3 1.2"/></g>';
       case 'chignon': return '<path d="M-7.5,-10 C-8,-20 7,-21 9.5,-12 L8,-12 C5,-16 -1,-16 -4,-10 Z"/><circle cx="-6.5" cy="-17" r="5.2"/>';
       case 'queue': return '<path d="M-7.5,-10 C-8,-20 7,-21 9.5,-12 L8,-12 C5,-16 -1,-16 -4,-10 Z"/><path d="M-6,-14 C-13,-12 -15,-3 -12,4 C-10,-2 -9,-8 -5,-10 Z"/>';
+      case 'fade': return '<path d="M-7,-10.5 C-8,-19 6,-21 9.4,-12.5 L8,-11.8 C5,-15.2 -2,-15.4 -5.6,-9.6 Z"/><circle cx="-7.6" cy="-11.5" r="2.4"/><circle cx="-6.0" cy="-14.6" r="2.4"/><circle cx="-3.6" cy="-16.8" r="2.4"/><circle cx="-0.6" cy="-18.0" r="2.4"/><circle cx="2.6" cy="-18.0" r="2.4"/><circle cx="5.6" cy="-16.8" r="2.4"/><circle cx="8.0" cy="-14.6" r="2.4"/><circle cx="9.6" cy="-11.5" r="2.4"/>';
+      case 'boucles': return '<circle cx="-4.5" cy="2.0" r="4.2"/><circle cx="-7.2" cy="-0.3" r="3.6"/><circle cx="-9.0" cy="-3.3" r="3.6"/><circle cx="-9.9" cy="-6.8" r="3.6"/><circle cx="-9.8" cy="-10.4" r="3.6"/><circle cx="-8.5" cy="-13.8" r="3.6"/><circle cx="-6.4" cy="-16.5" r="3.6"/><circle cx="-3.5" cy="-18.5" r="3.6"/><circle cx="-0.1" cy="-19.4" r="3.6"/><circle cx="3.3" cy="-19.2" r="3.6"/><circle cx="6.5" cy="-18.0" r="3.6"/><circle cx="9.2" cy="-15.7" r="3.6"/><circle cx="11.0" cy="-12.7" r="3.6"/><circle cx="-9" cy="2" r="3.6"/><circle cx="-7" cy="6.5" r="3.2"/><circle cx="-11" cy="-3" r="3.6"/>';
       case 'ras': return '';
       default: return '<path d="M-7,-10 C-8,-20 6,-21.5 9.4,-12.5 C8,-12 6.5,-13.5 5,-14 C2,-15 -2,-14 -4.5,-9.5 Z"/>';
     }
@@ -92,7 +94,7 @@
       (w ? '' : bodyAcc(o.acc, o.accent)) +
       '<g transform="translate(1.6,-84.5)"><g class="head">' +
       '<ellipse cx="1" cy="-8" rx="' + (8 + w / 2) + '" ry="' + (9.3 + w / 2) + '"/>' +
-      '<g' + (w ? ' stroke-width="' + (1 + w) + '"' : '') + '>' + hair(o.hair) + '</g>' +
+      '<g' + (w ? ' stroke-width="' + (1 + w) + '"' : (o.hairColor ? ' fill="' + o.hairColor + '" stroke="' + o.hairColor + '"' : '')) + '>' + hair(o.hair) + '</g>' +
       (w ? '' : headAcc(o.acc, o.accent)) + '</g></g>' +
       leg('f', w) + arm('f', w);
   }
@@ -104,7 +106,7 @@
     var accent = o.accent || '#ffd27a';
     var s = (o.h || 100) / 100;
     var f = o.f || 1;
-    var oo = { acc: o.acc, accent: accent, hair: o.hair || 'court' };
+    var oo = { acc: o.acc, accent: accent, hair: o.hair || 'court', hairColor: o.hairColor };
     return '<g class="fig ' + (o.cls || '') + '"' + (o.id ? ' id="' + o.id + '"' : '') +
       ' transform="translate(' + (o.x || 0) + ',' + (o.y || 0) + ') scale(' + (s * f) + ',' + s + ')"' +
       ' data-x="' + (o.x || 0) + '" data-y="' + (o.y || 0) + '" data-s="' + s + '" data-f="' + f + '"' +

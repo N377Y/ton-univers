@@ -45,7 +45,8 @@ Tout se règle dans **`js/config.js`**. Les textes entre `[crochets]` sont des e
 | Origines : tableaux, paysages, couleurs | `origins.tableaux` (2 ou 3) |
 | Point sur la carte d'Afrique | `origins.mapPoint` |
 | Symboles transmis et leurs légendes | `origins.symbols` |
-| Pensées (philosophie) | `thoughts` |
+| Citations de l'acte II (Socrate, Épictète, Itachi, Fanon) | `quotes` |
+| Mangas évoqués dans l'acte III | `mangas` |
 | Amis : nom, couleur, accessoire, souvenir | `friends` (2 à 4) |
 | Silhouettes : couleur et coiffure | `hero`, `companion`, `friends[].hair` |
 | Votre rencontre : couleur, souvenir de l'étoile | `companion` |
@@ -62,7 +63,7 @@ Les textes à l'écran (une ou deux phrases par scène) sont écrits dans `js/sc
 2. Taper le code. Majuscules, accents, espaces et ponctuation ne comptent pas.
 3. Copier l'empreinte affichée dans `codeHash`.
 
-Le code provisoire est **`UNIVERS`**. Seule son empreinte figure dans le code source, si bien
+Le code actuel est celui du jeu physique (4 chiffres). Seule son empreinte figure dans le code source, si bien
 qu'on ne peut pas le lire en ouvrant les fichiers. Attention toutefois : comme le prévoit la bible,
 c'est une **barrière narrative et non une vraie protection**.
 

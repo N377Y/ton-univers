@@ -23,7 +23,7 @@
     { id: 'colline', name: 'Colline sous la Lune', scene: 'III.4', x: 315, y: 215,
       info: function () { return [cfg.companion.star]; } },
     { id: 'choix', name: 'Chemin des choix', scene: 'II.1', x: 90, y: 250,
-      info: function () { return cfg.thoughts; } },
+      info: function () { var q = cfg.quotes || {}; return Object.keys(q).map(function (k) { return '« ' + q[k].text + ' » — ' + q[k].by; }); } },
     { id: 'compagnons', name: 'Village des compagnons', scene: 'III.3', x: 215, y: 330,
       info: function () { return cfg.friends.map(function (f) { return (f.name ? f.name + ' — ' : '') + (f.memory || ''); }); } },
     { id: 'origines', name: 'Arbre des origines', scene: 'I.2', x: 95, y: 430,
@@ -109,7 +109,7 @@
     };
     c.$ = function (s) { return c.svg.querySelector(s); };
     c.$$ = function (s) { return Array.prototype.slice.call(c.svg.querySelectorAll(s)); };
-    c.say = function (t) { if (c.alive) say(t); };
+    c.say = function (t, cite) { if (c.alive) say(t, cite); };
     c.hint = function (t) { if (c.alive) hintEl.textContent = t || ''; };
     c.ready = function () { if (c.alive) nextBtn.classList.add('pulse'); };
     c.after = function (ms, fn) {
@@ -305,7 +305,7 @@
 
   /* ---------------- texte à l'écran ---------------- */
   var sayTimer = null;
-  function say(t) {
+  function say(t, cite) {
     clearTimeout(sayTimer);
     caption.classList.add('out');
     sayTimer = setTimeout(function () {
@@ -323,6 +323,14 @@
         caption.appendChild(sp);
         caption.appendChild(document.createTextNode(' '));
       });
+      if (cite) {
+        var ci = document.createElement('span');
+        ci.className = 'cite';
+        ci.style.animationDelay = (state.reduced ? 0 : (t || '').split(' ').length * 70 + 300) + 'ms';
+        ci.textContent = cite;
+        caption.appendChild(ci);
+        sr.textContent += ' — ' + cite;
+      }
       caption.classList.remove('out');
     }, 320);
   }
@@ -401,7 +409,11 @@
   // carton d'acte plein écran, façon générique de film ; un toucher le passe
   function showActIntro(act, done) {
     var a = ACTS[act], el = $('#actintro');
-    el.innerHTML = '<div class="bar top"></div><div class="bar bot"></div><div class="t"><span class="num">Acte ' + a.num + '</span>' +
+    var LV = [null, ['#a8561c', '#3b2413'], ['#56732f', '#1e2c1a'], ['#a8231b', '#2b0c0a'], ['#2c62a8', '#0c1a34'], ['#9a7330', '#1c1610']][act];
+    el.style.setProperty('--lvc', LV[0]); el.style.setProperty('--lvd', LV[1]);
+    el.innerHTML = '<div class="card">' + ['left:14px;top:14px', 'right:14px;top:14px', 'left:14px;bottom:14px', 'right:14px;bottom:14px'].map(function (pos) {
+        return '<span class="gem" style="' + pos.replace(/14px/g, '9.5px') + '"></span>'; }).join('') + '</div>' +
+      '<div class="bar top"></div><div class="bar bot"></div><div class="t"><span class="seal">' + a.num + '</span><span class="num">Acte ' + a.num + '</span>' +
       '<span class="name">' + a.name.split('').map(function (ch, i) { return '<i style="animation-delay:' + (200 + i * 45) + 'ms">' + (ch === ' ' ? '&nbsp;' : ch) + '</i>'; }).join('') + '</span>' +
       '<span class="sub">' + a.sub + '</span></div>';
     el.hidden = false;
